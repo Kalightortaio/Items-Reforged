@@ -1,0 +1,22 @@
+<ItemPools>
+    <Pool Name="treasure">
+      <!--Monster Manual-->
+      <Item Name=" Monster Manual " Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+      <!--Hallowed Ground-->
+      <Item Name=" Hallowed Ground " Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    </Pool>
+    <Pool Name="greedLibrary">
+      <!--Monster Manual-->
+      <Item Name=" Monster Manual " Weight="1" DecreaseBy="0.1" RemoveOn="0.1"/>
+    </Pool>
+    <Pool Name="greedTreasure">
+      <!--Hallowed Ground-->
+      <Item Name=" Hallowed Ground " Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    </Pool>
+    <Pool Name="angel">
+      <!--Dad's Ring-->
+      <Item Name="Dad's Ring" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+      <!--Hallowed Ground-->
+      <Item Name=" Hallowed Ground " Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    </Pool>
+</ItemPools>

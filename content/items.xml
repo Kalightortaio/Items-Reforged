@@ -1,0 +1,4 @@
+<items gfxroot="gfx/items/" version="1">
+	<active name=" Hallowed Ground " gfx="Collectibles_543_HallowedGround.png" description="Portable sanctuary" maxcharges="1" id="45451" />
+	<active name=" Monster Manual " gfx="Collectibles_123_MonsterManual.png" description="Temporary buddy generator" maxcharges="3" cooldown="300" id="45452" />
+</items>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <name>Items Reforged</name>
+    <directory>items reforged</directory>
+    <id>2342471510</id>
+    <description>[h1]Items Reforged![/h1]
+This mod aims to rebalance and tweak items that would otherwise be detrimental to a run, while remaining faithful to the vanilla experience.
+
+Supports External Item Descriptions!
+Supports Mod Config Menu!
+Supports True Co-op!
+
+[h1]Features:[/h1]
+[list]
+  [*]Breath of Life fires a high damage angelic laser in all 4 corners of the screen.
+  [*]Glass Cannon has a faster cooldown, but briefly pauses firing tears upon use. All health is also converted to empty bone hearts.
+  [*]Dad's Lost Coin works much like Money = Power, except for luck. For every coin you have, you gain 0.4 luck.
+  [*]Tiny Planet gives a slight tears up, range up, shotspeed down, and follows a more uniform orbit around Isaac.
+  [*]Trisagion now curves up its -66% Damage Multiplier by using a secondary 33% Damage Multiplier.
+  [*]Abel scales with half of player damage and fires stagnant tears that act as land mines.
+  [*]Brother Bobby scales with player damage faster with a lower starting damage.
+  [*]Sister Maggy scales with player damage slower with a higher starting damage.
+  [*]Little C.H.A.D. will give one heart container upon acquisition.
+  [*]Little Gish will give two black heart containers upon acquisition.
+  [*]Strange Attractor provides a 20% Damage Multiplier and pulls enemies towards the middle of your range.
+  [*]Mine Crafter recharges over time and has a slight cooldown.
+  [*]The Bean, Kidney Bean, and Mega Bean all recharges over time.
+  [*]Mom's Pad requires 6 charges, and fears enemies after the active fear wears off.
+  [*]Mom's Bra requires 4 charges, and slows enemies after the active petrify wears off.
+  [*]Cursed Eye gives a +1 Damage up, and has a chance to confuse enemies struck.
+  [*]Dead Tooth's poison aura has a chance for killed enemies to drop black hearts.
+  [*]Dead Sea Scrolls now picks from a list of 108 active items. The Clicker is excluded.
+  [*]Plan C will now revive you as ???, only if you have the character unlocked.
+  [*]Scissors scales evenly with your damage and tear effects. Additionally, the item will spawn a long lasting creep.
+  [*]The Poop will spawn a brown creep alongside a poop when used.
+  [*]Hallowed Ground is now an active item that lets you choose where to place the white poop.
+  [*]Holy Water grants a splash damage tear effect that spawns creep, pierces enemies, and has a 10% Damage Multiplier.
+  [*]Monster Manual gives you extra familiars for the current floor.
+  [*]Isaac's Tears has been reduced to 4 charges. Also this item was buffed in Booster pack #5 (Lesser known by players).
+  [*]Necronomicon has been reduced to 4 charges. 
+  [*]Dataminer, on top of its normal effects, has a chance (in ascending rarity) to spawn a game breaking bug, activate broken modem for a room, cause an error, or teleports you to the I AM ERROR room. The latter effect consumes the item.
+  [*]Missing Page 2 will proc on any health lost, causing slight mass room damage.
+  [*]Guppy's Hairball summons blue flies upon entering a new room, the amount less than or equal to the number of enemies.
+  [*]Little Baggy grants half a soul heart upon taking any pill.
+  [*]God's Flesh will protect you from enemies that would otherwise explode, cause further enemies to spawn, or release shots. This effect however, will also override other death triggers, such as consumable drops.
+  [*]Isaac's Heart calls out to its brothers, as a new tear effect that heavily increases heart drop chances. 
+  [*]Best Bud, when activated, will deal damage and block shots.
+  [*]Fast Bombs grant a massive tears up to Dr. Fetus and Epic Fetus.
+  [*]King Baby gathers your familiars around him, and always follows you into battle.
+  [*]Dad's Ring and Hallowed Ground are now Angel Room items as well.
+[/list]
+
+Let me know if you enjoy the mod, find any bugs, have any suggestions or criticisms!
+</description>
+    <version>1.5.1</version>
+    <visibility>Public</visibility>
+    <tag id="Lua"/>
+    <tag id="Items"/>
+    <tag id="Active Items"/>
+    <tag id="Pickups"/>
+    <tag id="Familiars"/>
+    <tag id="Tweaks"/>
+    <tag id="Removals"/>
+</metadata>
