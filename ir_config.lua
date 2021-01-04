@@ -14,9 +14,9 @@ IR.DefaultConfig = {
     ["CursedEyeChance"] = 2,
     -- Changes the probability of cursed eye proccing
     -- Default = 2
-    ["StrangeAttractorDist"] = 1,
+    ["StrangeAttractorDist"] = 0,
     -- Changes the distance at which strange attractor pulls in things.
-    -- Default = 1,
+    -- Default = 0,
     ["IsaacsHeartChance"] = 5,
     -- Changes the probability of isaac's heart proccing
     -- Default = 5

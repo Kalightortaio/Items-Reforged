@@ -129,7 +129,7 @@ if MCMLoaded then
         {
             Type = ModConfigMenuOptionType.NUMBER,
             Minimum = -1,
-            Maximum = 5,
+            Maximum = 1,
             CurrentSetting = function()
                 return IR.Config["StrangeAttractorDist"]
             end,

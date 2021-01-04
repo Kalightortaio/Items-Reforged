@@ -8,10 +8,13 @@ This mod aims to rebalance and tweak items that would otherwise be detrimental t
 
 Supports External Item Descriptions!
 Supports Mod Config Menu!
-Supports True Co-op!
+Supports Revelations!
+Supports Friend Folio!
+&amp; More!
 
 [h1]Features:[/h1]
 [list]
+  [*]Magneto has a 25% chance to reflect enemy shots back at them.
   [*]Breath of Life fires a high damage angelic laser in all 4 corners of the screen.
   [*]Glass Cannon has a faster cooldown, but briefly pauses firing tears upon use. All health is also converted to empty bone hearts.
   [*]Dad's Lost Coin works much like Money = Power, except for luck. For every coin you have, you gain 0.4 luck.
@@ -22,7 +25,7 @@ Supports True Co-op!
   [*]Sister Maggy scales with player damage slower with a higher starting damage.
   [*]Little C.H.A.D. will give one heart container upon acquisition.
   [*]Little Gish will give two black heart containers upon acquisition.
-  [*]Strange Attractor provides a 20% Damage Multiplier and pulls enemies towards the middle of your range.
+  [*]Strange Attractor provides a 20% Damage Multiplier and pulls enemies towards the player less quickly.
   [*]Mine Crafter recharges over time and has a slight cooldown.
   [*]The Bean, Kidney Bean, and Mega Bean all recharges over time.
   [*]Mom's Pad requires 6 charges, and fears enemies after the active fear wears off.
@@ -52,7 +55,7 @@ Supports True Co-op!
 
 Let me know if you enjoy the mod, find any bugs, have any suggestions or criticisms!
 </description>
-    <version>1.5.1</version>
+    <version>1.7</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Items"/>
