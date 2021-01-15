@@ -1,23 +1,61 @@
 IR.DefaultConfig = {
-    ["DadsLostCoinLuck"] = 0.4,
-    -- Amount of luck each coin should give. Range: [0,..,1]
-    -- Default = 0.4
+    ["DadsLostCoinLuck"] = 0.1,
     ["MonsterManualLimit"] = 20,
-    -- Amount of maximum familiars granted each floor. Range: [1,...,50]
-    -- Default = 20
-    ["MomsPadFear"] = true,
-    -- Toggles if Mom's Pad should fear enemies after the active wears off.
-    -- Default = true
-    ["MomsBraSlow"] = true,
-    -- Toggles if Mom's Bra should slow enemies after the active wears off.
-    -- Default = true
     ["CursedEyeChance"] = 2,
-    -- Changes the probability of cursed eye proccing
-    -- Default = 2
     ["StrangeAttractorDist"] = 0,
-    -- Changes the distance at which strange attractor pulls in things.
-    -- Default = 0,
-    ["IsaacsHeartChance"] = 5,
-    -- Changes the probability of isaac's heart proccing
-    -- Default = 5
+    ["IsaacsHeartChance"] = 10,
+    ["doBreathOfLife"] = true,
+    ["doGlassCannon"] = true,
+    ["doMomsPad"] = true,
+    ["doMomsBra"] = true,
+    ["doDeadSeaScrolls"] = true,
+    ["doScissors"] = true,
+    ["doPoop"] = true,
+    ["doHallowedGround"] = true,
+    ["doMonsterManual"] = true,
+    ["doDataminer"] = true,
+    ["doYumHeart"] = true,
+    ["doHourglass"] = true,
+    ["doSpiderButt"] = true,
+    ["doPlanC"] = true,
+    ["doKamikaze"] = true,
+    ["doTinyPlanet"] = true,
+    ["doMagneto"] = true,
+    ["doDadsLostCoin"] = true,
+    ["doTrisagion"] = true,
+    ["doStrangeAttractor"] = true,
+    ["doCursedEye"] = true,
+    ["doDeadTooth"] = true,
+    ["doHolyWater"] = true,
+    ["doMissingPage"] = true,
+    ["doLittleBaggy"] = true,
+    ["doGodsFlesh"] = true,
+    ["doIsaacsHeart"] = true,
+    ["doFastBombs"] = true,
+    ["doThreeDollar"] = true,
+    ["doTechTwo"] = true,
+    ["doCommonCold"] = true,
+    ["doPlacenta"] = true,
+    ["doBlackBean"] = true,
+    ["doLuckyFoot"] = true,
+    ["doMagicEightBall"] = true,
+    ["doBetrayal"] = true,
+    ["doShard"] = true,
+    ["doPokeGo"] = true,
+    ["doAbel"] = true,
+    ["doBrotherBobby"] = true,
+    ["doSisterMaggy"] = true,
+    ["doLittleChad"] = true,
+    ["doLittleGish"] = true,
+    ["doGuppyHairball"] = true,
+    ["doBestBud"] = true,
+    ["doKingBaby"] = true,
+    ["doBloodshotEye"] = true,
+    ["doRainbowBaby"] = true,
+    ["doCainsOtherEye"] = true,
+    ["doPeeper"] = true,
+    ["doGhostBaby"] = true,
+    ["doLittleSteven"] = true,
+    ["doHarlequinBaby"] = true,
+    ["doFartingBaby"] = true,
 }

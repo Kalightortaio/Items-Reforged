@@ -19,4 +19,8 @@
       <!--Hallowed Ground-->
       <Item Name=" Hallowed Ground " Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
     </Pool>
+    <Pool Name="shop">
+      <!--Magneto-->
+      <Item Name="Magneto" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    </Pool>
 </ItemPools>
