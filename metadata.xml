@@ -92,7 +92,7 @@ All changes are configurable with the Mod Config Menu. (May require a restart du
 
 Let me know if you enjoy the mod, find any bugs, have any suggestions or criticisms!
 </description>
-    <version>1.9</version>
+    <version>1.9.1</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Items"/>

@@ -6,7 +6,7 @@ IR = RegisterMod("Items Reforged", 1)
 local json = require("json")
 require("ir_config")
 IR.Config = IR.DefaultConfig
-IR.Config.Version = "1.9"
+IR.Config.Version = "1.9.1"
 IR.GameState = {}
 IR.EntityList = {
     Tears = {},
@@ -76,7 +76,7 @@ IR.yumheart = {
 }
 IR.DeadSeaScrolls = {CollectibleType.COLLECTIBLE_BOOK_REVELATIONS,CollectibleType.COLLECTIBLE_BOOK_OF_SECRETS,CollectibleType.COLLECTIBLE_PRAYER_CARD,CollectibleType.COLLECTIBLE_SHOOP_DA_WHOOP,CollectibleType.COLLECTIBLE_EDENS_SOUL,CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS,CollectibleType.COLLECTIBLE_BLUE_BOX,CollectibleType.COLLECTIBLE_MY_LITTLE_UNICORN,CollectibleType.COLLECTIBLE_DADS_KEY,CollectibleType.COLLECTIBLE_PONY,CollectibleType.COLLECTIBLE_WAIT_WHAT,CollectibleType.COLLECTIBLE_CRYSTAL_BALL,CollectibleType.COLLECTIBLE_DECK_OF_CARDS,CollectibleType.COLLECTIBLE_FORGET_ME_NOW,CollectibleType.COLLECTIBLE_BOBS_ROTTEN_HEAD,CollectibleType.COLLECTIBLE_TAMMYS_HEAD,CollectibleType.COLLECTIBLE_GUPPYS_HEAD,CollectibleType.COLLECTIBLE_HEAD_OF_KRAMPUS,CollectibleType.COLLECTIBLE_FLUSH,CollectibleType.COLLECTIBLE_BOX_OF_SPIDERS,CollectibleType.COLLECTIBLE_HOW_TO_JUMP,CollectibleType.COLLECTIBLE_BLANK_CARD,CollectibleType.COLLECTIBLE_BUTTER_BEAN,CollectibleType.COLLECTIBLE_KIDNEY_BEAN,CollectibleType.COLLECTIBLE_MEGA_BEAN,CollectibleType.COLLECTIBLE_BEAN,CollectibleType.COLLECTIBLE_MOMS_BOTTLE_PILLS,CollectibleType.COLLECTIBLE_MOMS_BRA,CollectibleType.COLLECTIBLE_MOMS_PAD,CollectibleType.COLLECTIBLE_GUPPYS_PAW,CollectibleType.COLLECTIBLE_ISAACS_TEARS,CollectibleType.COLLECTIBLE_LEMON_MISHAP,IR.monstermanual.Item,CollectibleType.COLLECTIBLE_DATAMINER,CollectibleType.COLLECTIBLE_PORTABLE_SLOT,CollectibleType.COLLECTIBLE_SPIDER_BUTT,CollectibleType.COLLECTIBLE_SATANIC_BIBLE,CollectibleType.COLLECTIBLE_BIBLE,CollectibleType.COLLECTIBLE_BOOMERANG,IR.hallowedground.Item,CollectibleType.COLLECTIBLE_SMELTER,CollectibleType.COLLECTIBLE_PAUSE,CollectibleType.COLLECTIBLE_CROOKED_PENNY,CollectibleType.COLLECTIBLE_DULL_RAZOR,CollectibleType.COLLECTIBLE_METRONOME,CollectibleType.COLLECTIBLE_BROWN_NUGGET,CollectibleType.COLLECTIBLE_SPRINKLER,CollectibleType.COLLECTIBLE_MYSTERY_GIFT,CollectibleType.COLLECTIBLE_TELEKINESIS,CollectibleType.COLLECTIBLE_BLOOD_RIGHTS,CollectibleType.COLLECTIBLE_RAZOR_BLADE,CollectibleType.COLLECTIBLE_IV_BAG,CollectibleType.COLLECTIBLE_DEAD_SEA_SCROLLS,CollectibleType.COLLECTIBLE_KAMIKAZE,CollectibleType.COLLECTIBLE_POOP,CollectibleType.COLLECTIBLE_TELEPORT,CollectibleType.COLLECTIBLE_GAMEKID,CollectibleType.COLLECTIBLE_BOOK_OF_SIN,CollectibleType.COLLECTIBLE_D6,CollectibleType.COLLECTIBLE_D12,CollectibleType.COLLECTIBLE_D8,CollectibleType.COLLECTIBLE_D10,CollectibleType.COLLECTIBLE_D100,CollectibleType.COLLECTIBLE_DOCTORS_REMOTE,CollectibleType.COLLECTIBLE_MR_BOOM,CollectibleType.COLLECTIBLE_NOTCHED_AXE,CollectibleType.COLLECTIBLE_WOODEN_NICKEL,CollectibleType.COLLECTIBLE_BOX_OF_FRIENDS,CollectibleType.COLLECTIBLE_THE_NAIL,CollectibleType.COLLECTIBLE_ANARCHIST_COOKBOOK,CollectibleType.COLLECTIBLE_WE_NEED_GO_DEEPER,CollectibleType.COLLECTIBLE_PINKING_SHEARS,CollectibleType.COLLECTIBLE_MONSTROS_TOOTH,CollectibleType.COLLECTIBLE_RED_CANDLE,CollectibleType.COLLECTIBLE_CANDLE,CollectibleType.COLLECTIBLE_BEST_FRIEND,CollectibleType.COLLECTIBLE_WHITE_PONY,CollectibleType.COLLECTIBLE_YUM_HEART,CollectibleType.COLLECTIBLE_FRIEND_BALL,CollectibleType.COLLECTIBLE_VOID,CollectibleType.COLLECTIBLE_D1,CollectibleType.COLLECTIBLE_MAMA_MEGA,CollectibleType.COLLECTIBLE_MEGA_SATANS_BREATH,CollectibleType.COLLECTIBLE_MINE_CRAFTER,CollectibleType.COLLECTIBLE_MOMS_BOX,CollectibleType.COLLECTIBLE_D7,CollectibleType.COLLECTIBLE_BLACK_HOLE,CollectibleType.COLLECTIBLE_SHARP_STRAW,CollectibleType.COLLECTIBLE_MR_ME,CollectibleType.COLLECTIBLE_TELEPORT_2,CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS,CollectibleType.COLLECTIBLE_HOURGLASS,CollectibleType.COLLECTIBLE_GLASS_CANNON,CollectibleType.COLLECTIBLE_UNICORN_STUMP,CollectibleType.COLLECTIBLE_CONVERTER,CollectibleType.COLLECTIBLE_SCISSORS,CollectibleType.COLLECTIBLE_BOOK_OF_BELIAL,CollectibleType.COLLECTIBLE_NECRONOMICON,CollectibleType.COLLECTIBLE_BOOK_OF_THE_DEAD,CollectibleType.COLLECTIBLE_UNDEFINED,CollectibleType.COLLECTIBLE_DIPLOPIA,CollectibleType.COLLECTIBLE_DELIRIOUS,CollectibleType.COLLECTIBLE_POTATO_PEELER,CollectibleType.COLLECTIBLE_PLAN_C,CollectibleType.COLLECTIBLE_MAGIC_FINGERS,CollectibleType.COLLECTIBLE_D4,CollectibleType.COLLECTIBLE_PLACEBO,CollectibleType.COLLECTIBLE_SACRIFICIAL_ALTAR}
 require("ir_config_menu")
-Isaac.ConsoleOutput("Items Reforged v" .. IR.Config.Version .. ": Check out Isaac Reforged!\n")
+Isaac.ConsoleOutput("Items Reforged v" .. IR.Config.Version .. ": Next update... External Item Descriptions!\n")
 
 --------------------------------
 -- External Item Descriptions --
@@ -133,6 +133,13 @@ function IR:onStart()
                 for key, value in pairs(IR.Config) do
                     IR.Config[key] = savedIRConfig[key]
                 end
+            elseif savedIRConfig.Version ~= nil and savedIRConfig.Version ~= IR.Config.Version then
+                for key, value in pairs(IR.Config) do
+                    if savedIRConfig[key] ~= nil then
+                        IR.Config[key] = savedIRConfig[key]
+                    end
+                end
+                IR.Config.Version = "1.9.1"
             end
         end
     end
@@ -409,7 +416,11 @@ function IR:onUpdate()
         -----------------------------------------
         if player:HasCollectible(CollectibleType.COLLECTIBLE_HALLOWED_GROUND) and IR.Config["doHallowedGround"] then
             player:RemoveCollectible(CollectibleType.COLLECTIBLE_HALLOWED_GROUND)
-            player:AddCollectible(IR.hallowedground.Item, 1, false)
+            if player:GetActiveItem() == 0 then
+                player:AddCollectible(IR.hallowedground.Item, 1, false)
+            else
+                Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, IR.hallowedground.Item, Isaac.GetFreeNearPosition(player.Position, 20), Vector(0,0), nil)
+            end
         end
         if player:GetActiveItem() == IR.hallowedground.Item and not IR.hallowedground.hasHallow and IR.Config["doHallowedGround"] then
             player:RemoveCollectible(IR.hallowedground.Item)
