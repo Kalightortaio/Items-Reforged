@@ -1,8 +1,3 @@
 <items gfxroot="gfx/items/" version="1">
-	<active name=" Hallowed Ground " gfx="Collectibles_543_HallowedGround.png" description="Portable sanctuary" maxcharges="1" id="45451" />
-	<active name=" Monster Manual " gfx="Collectibles_123_MonsterManual.png" description="Temporary buddy generator" maxcharges="3" cooldown="300" id="45452" />
-	<active name=" Yum Heart " gfx="yumheart_soul.png" description="Heals a half soul heart" maxcharges="4" id="45461" />
-	<active name="  Yum Heart  " gfx="yumheart_black.png" description="Heals a black heart" maxcharges="6" id="45462" />
-	<active name="   Yum Heart   " gfx="yumheart_eternal.png" description="Heals an eternal heart" maxcharges="6" id="45463" />
-	<active name="    Yum Heart    " gfx="yumheart_one_up.png" description="Heals life itself" maxcharges="12" id="45464" />
+    <trinket name=" The Right Hand " description="The right-hand path reaps light rewards" gfx="the_right_hand.png"/>
 </items>

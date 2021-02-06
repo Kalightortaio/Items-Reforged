@@ -1,1198 +1,548 @@
 --------------------------------------------------------------------------------------------------
--- Items Reforged by Kalightortaio, Krishna Kokatay, 2020. http://www.kalightortaio.com         --
+-- Isaac Reforged by Kalightortaio, Krishna Kokatay, 2020. http://www.kalightortaio.com         --
 -- A huge thank you to Lytebringr, Wofsauge, and the #modding-dev community in the TBOI Discord --
 --------------------------------------------------------------------------------------------------
-IR = RegisterMod("Items Reforged", 1)
+ISR = RegisterMod("Isaac Reforged", 1)
 local json = require("json")
-require("ir_config")
-IR.Config = IR.DefaultConfig
-IR.Config.Version = "1.9.1"
-IR.GameState = {}
-IR.EntityList = {
-    Tears = {},
-    Enemies = {},
-    Familiars = {},
-    Pickups = {}
+local Game = Game()
+require("isr_config")
+ISR.Config = ISR.DefaultConfig
+ISR.Config.Version = "1.6.2"
+ISR.GameState = {}
+ISR.EntityList = {
+    Bombs = {}
 }
-IR.BonusLuck = 0
-IR.BreathCooldown = 0
-IR.ActiveItemRoom = 0
-IR.ActiveItemTimer = 0
-IR.ActiveItemLimit = false
-IR.hasPeeper = false
-IR.Timer = 0
-IR.coinsOnProc = 0
-IR.savedLuck = 0
-IR.glasscannon = {
-    doGCBatterySound = false,
-    hasCooldown = false,
-    bonehealth = 0,
-    redhealth = 0,
-    bluehealth = 0,
-    blackhealth = 0
+ISR.Transformations = {
+    hasConjoined = false,
+    hasAdult = false,
+    hasMushroom = false,
+    hasCrap = false,
+    hasSpiderBaby = false,
+    hasBob = false,
+    hasSeraphim = false,
+    hasBeelzbub = false,
+    hasMagneto = false,
+}   
+ISR.ActiveItemTimer = 0
+ISR.TintedGround = {
+    checkForDigging = false,
+    hasDug = false,
+    currentFloorMG = {},
+    currentFloorDG = {},
+    currentRoomMG = 0,
+    MGX = 0,
+    MGY = 0,
+    markedGround = {
+        Type = EntityType.ENTITY_EFFECT,
+        Variant = EffectVariant.PLAYER_CREEP_RED,
+        SubType0 = 742854312,
+        SubType1 = 742854313,
+        Spawner = nil,
+    }
 }
-IR.dataminer = {
-    DMroom = 0,
-    usedDM = false,
-    hasModem = false,
-    hadModem = false
-}
-IR.hallowedground = {
-    Item = Isaac.GetItemIdByName(" Hallowed Ground "),
-    hasHallow = false
-}
-IR.monstermanual = {
-    Item = Isaac.GetItemIdByName(" Monster Manual "),
-    fVariant = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 30, 31, 32, 33, 35, 40, 42, 43, 44, 45, 46, 47, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130},
-    fList = {},
-    fNum = 0,
-    fRoll = nil,
-    MMholywater = false,
-    famRNG = RNG()
-}
-IR.planc = {
-    usedPlanC = false,
-    deathDelay = 50
-}
-IR.fastbombs = {
-    hasEpicFetus = false,
-    hasDrFetus = false
-}
-IR.kingbaby = {
-    proccessFamiliars = false,
-    orbitOne = 22,
-    orbitSpeed = 0.01,
-    orbitVelocity = 6,
-    orbitLayerOne = 1268,
-    orbitLayerTwo = 1269,
-    orbitDistanceOne = Vector(87.0, 87.0),
-    orbitDistanceTwo = Vector(130.0, 130.0)
-}
-IR.yumheart = {
-    Soul = Isaac.GetItemIdByName(" Yum Heart "),
-    Black = Isaac.GetItemIdByName("  Yum Heart  "),
-    Eternal = Isaac.GetItemIdByName("   Yum Heart   "),
-    OneUp = Isaac.GetItemIdByName("    Yum Heart    "),
-}
-IR.DeadSeaScrolls = {CollectibleType.COLLECTIBLE_BOOK_REVELATIONS,CollectibleType.COLLECTIBLE_BOOK_OF_SECRETS,CollectibleType.COLLECTIBLE_PRAYER_CARD,CollectibleType.COLLECTIBLE_SHOOP_DA_WHOOP,CollectibleType.COLLECTIBLE_EDENS_SOUL,CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS,CollectibleType.COLLECTIBLE_BLUE_BOX,CollectibleType.COLLECTIBLE_MY_LITTLE_UNICORN,CollectibleType.COLLECTIBLE_DADS_KEY,CollectibleType.COLLECTIBLE_PONY,CollectibleType.COLLECTIBLE_WAIT_WHAT,CollectibleType.COLLECTIBLE_CRYSTAL_BALL,CollectibleType.COLLECTIBLE_DECK_OF_CARDS,CollectibleType.COLLECTIBLE_FORGET_ME_NOW,CollectibleType.COLLECTIBLE_BOBS_ROTTEN_HEAD,CollectibleType.COLLECTIBLE_TAMMYS_HEAD,CollectibleType.COLLECTIBLE_GUPPYS_HEAD,CollectibleType.COLLECTIBLE_HEAD_OF_KRAMPUS,CollectibleType.COLLECTIBLE_FLUSH,CollectibleType.COLLECTIBLE_BOX_OF_SPIDERS,CollectibleType.COLLECTIBLE_HOW_TO_JUMP,CollectibleType.COLLECTIBLE_BLANK_CARD,CollectibleType.COLLECTIBLE_BUTTER_BEAN,CollectibleType.COLLECTIBLE_KIDNEY_BEAN,CollectibleType.COLLECTIBLE_MEGA_BEAN,CollectibleType.COLLECTIBLE_BEAN,CollectibleType.COLLECTIBLE_MOMS_BOTTLE_PILLS,CollectibleType.COLLECTIBLE_MOMS_BRA,CollectibleType.COLLECTIBLE_MOMS_PAD,CollectibleType.COLLECTIBLE_GUPPYS_PAW,CollectibleType.COLLECTIBLE_ISAACS_TEARS,CollectibleType.COLLECTIBLE_LEMON_MISHAP,IR.monstermanual.Item,CollectibleType.COLLECTIBLE_DATAMINER,CollectibleType.COLLECTIBLE_PORTABLE_SLOT,CollectibleType.COLLECTIBLE_SPIDER_BUTT,CollectibleType.COLLECTIBLE_SATANIC_BIBLE,CollectibleType.COLLECTIBLE_BIBLE,CollectibleType.COLLECTIBLE_BOOMERANG,IR.hallowedground.Item,CollectibleType.COLLECTIBLE_SMELTER,CollectibleType.COLLECTIBLE_PAUSE,CollectibleType.COLLECTIBLE_CROOKED_PENNY,CollectibleType.COLLECTIBLE_DULL_RAZOR,CollectibleType.COLLECTIBLE_METRONOME,CollectibleType.COLLECTIBLE_BROWN_NUGGET,CollectibleType.COLLECTIBLE_SPRINKLER,CollectibleType.COLLECTIBLE_MYSTERY_GIFT,CollectibleType.COLLECTIBLE_TELEKINESIS,CollectibleType.COLLECTIBLE_BLOOD_RIGHTS,CollectibleType.COLLECTIBLE_RAZOR_BLADE,CollectibleType.COLLECTIBLE_IV_BAG,CollectibleType.COLLECTIBLE_DEAD_SEA_SCROLLS,CollectibleType.COLLECTIBLE_KAMIKAZE,CollectibleType.COLLECTIBLE_POOP,CollectibleType.COLLECTIBLE_TELEPORT,CollectibleType.COLLECTIBLE_GAMEKID,CollectibleType.COLLECTIBLE_BOOK_OF_SIN,CollectibleType.COLLECTIBLE_D6,CollectibleType.COLLECTIBLE_D12,CollectibleType.COLLECTIBLE_D8,CollectibleType.COLLECTIBLE_D10,CollectibleType.COLLECTIBLE_D100,CollectibleType.COLLECTIBLE_DOCTORS_REMOTE,CollectibleType.COLLECTIBLE_MR_BOOM,CollectibleType.COLLECTIBLE_NOTCHED_AXE,CollectibleType.COLLECTIBLE_WOODEN_NICKEL,CollectibleType.COLLECTIBLE_BOX_OF_FRIENDS,CollectibleType.COLLECTIBLE_THE_NAIL,CollectibleType.COLLECTIBLE_ANARCHIST_COOKBOOK,CollectibleType.COLLECTIBLE_WE_NEED_GO_DEEPER,CollectibleType.COLLECTIBLE_PINKING_SHEARS,CollectibleType.COLLECTIBLE_MONSTROS_TOOTH,CollectibleType.COLLECTIBLE_RED_CANDLE,CollectibleType.COLLECTIBLE_CANDLE,CollectibleType.COLLECTIBLE_BEST_FRIEND,CollectibleType.COLLECTIBLE_WHITE_PONY,CollectibleType.COLLECTIBLE_YUM_HEART,CollectibleType.COLLECTIBLE_FRIEND_BALL,CollectibleType.COLLECTIBLE_VOID,CollectibleType.COLLECTIBLE_D1,CollectibleType.COLLECTIBLE_MAMA_MEGA,CollectibleType.COLLECTIBLE_MEGA_SATANS_BREATH,CollectibleType.COLLECTIBLE_MINE_CRAFTER,CollectibleType.COLLECTIBLE_MOMS_BOX,CollectibleType.COLLECTIBLE_D7,CollectibleType.COLLECTIBLE_BLACK_HOLE,CollectibleType.COLLECTIBLE_SHARP_STRAW,CollectibleType.COLLECTIBLE_MR_ME,CollectibleType.COLLECTIBLE_TELEPORT_2,CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS,CollectibleType.COLLECTIBLE_HOURGLASS,CollectibleType.COLLECTIBLE_GLASS_CANNON,CollectibleType.COLLECTIBLE_UNICORN_STUMP,CollectibleType.COLLECTIBLE_CONVERTER,CollectibleType.COLLECTIBLE_SCISSORS,CollectibleType.COLLECTIBLE_BOOK_OF_BELIAL,CollectibleType.COLLECTIBLE_NECRONOMICON,CollectibleType.COLLECTIBLE_BOOK_OF_THE_DEAD,CollectibleType.COLLECTIBLE_UNDEFINED,CollectibleType.COLLECTIBLE_DIPLOPIA,CollectibleType.COLLECTIBLE_DELIRIOUS,CollectibleType.COLLECTIBLE_POTATO_PEELER,CollectibleType.COLLECTIBLE_PLAN_C,CollectibleType.COLLECTIBLE_MAGIC_FINGERS,CollectibleType.COLLECTIBLE_D4,CollectibleType.COLLECTIBLE_PLACEBO,CollectibleType.COLLECTIBLE_SACRIFICIAL_ALTAR}
-require("ir_config_menu")
-Isaac.ConsoleOutput("Items Reforged v" .. IR.Config.Version .. ": Next update... External Item Descriptions!\n")
+TrinketType.TRINKET_FF_RIGHT_HAND = Isaac.GetTrinketIdByName("The Right Hand")
+TrinketType.TRINKET_RIGHT_HAND = Isaac.GetTrinketIdByName(" The Right Hand ")
+PillEffect.PILLEFECT_DUALITY = Isaac.GetPillEffectByName("Duality!")
+PillEffect.PILLEFECT_MAGNETO = Isaac.GetPillEffectByName("Magneto!")
+require("isr_config_menu")
+Isaac.ConsoleOutput("Isaac Reforged v" .. ISR.Config.Version .. ": Next update... New Transformations!\n")
 
---------------------------------
--- External Item Descriptions --
---------------------------------
+
 if EID then
-    EID:addCollectible(IR.monstermanual.Item, "Random familiar for current floor")
-    EID:addCollectible(IR.hallowedground.Item, "Spawns one white poop#(White poop has a ↑ Tears up aura and can block damage)")
-    EID:addCollectible(CollectibleType.COLLECTIBLE_MONSTER_MANUAL, "Random familiar for current floor")
-    EID:addCollectible(CollectibleType.COLLECTIBLE_HALLOWED_GROUND, "Spawns one white poop#(White poop has a ↑ Tears up aura and can block damage)")
-    EID:addCollectible(CollectibleType.COLLECTIBLE_DADS_LOST_COIN, "↑ +"..IR.Config["DadsLostCoinLuck"].." Luck up for every coin you have")
-    EID:addCollectible(CollectibleType.COLLECTIBLE_BREATH_OF_LIFE, "Shoot angelic lasers at all 4 angles")
-    EID:addCollectible(CollectibleType.COLLECTIBLE_HOLY_WATER, "↑ +10% Damage Multiplier#Piercing Tears#Tears leave creep#Leaves pool of creep when you get hit")
+    EID:addTrinket(TrinketType.TRINKET_RIGHT_HAND, "Turns all chests into eternal chests")
+    EID:addPill(PillEffect.PILLEFFECT_I_FOUND_PILLS, "It's a mystery")
 end
 
--------------------
--- Load Mod Data --
--------------------
-function IR:onStart()
-    if IR:HasData() then
-        IR.GameState = json.decode(IR:LoadData())
-        if IR.GameState.fList == nil then
-            IR.GameState.fList = {}
-        else
-            IR.monstermanual.fList = IR.GameState.fList
+function ISR:onStart()
+    if ISR:HasData() then
+        ISR.GameState = json.decode(ISR:LoadData())
+        if ISR.GameState.Transformations ~= nil then
+            ISR.Transformations = ISR.GameState.Transformations
         end
-        if IR.GameState.hasEpicFetus == nil then
-            IR.GameState.hasEpicFetus = false
-        else
-            IR.fastbombs.hasEpicFetus = IR.GameState.hasEpicFetus
+        if ISR.GameState.TintedGround ~= nil then
+            ISR.TintedGround = ISR.GameState.TintedGround
         end
-        if IR.GameState.hasDrFetus == nil then
-            IR.GameState.hasDrFetus = false
-        else
-            IR.fastbombs.hasDrFetus = IR.GameState.hasDrFetus
-        end
-        if IR.GameState.hasHallow == nil then
-            IR.GameState.hasHallow = false
-        else
-            IR.hallowedground.hasHallow = IR.GameState.hasHallow
-        end
-        if IR.GameState.Timer == nil then
-            IR.GameState.Timer = false
-        else
-            IR.Timer = IR.GameState.Timer
-        end
-        if IR.GameState.coinsOnProc == nil then
-            IR.GameState.coinsOnProc = false
-        else
-            IR.coinsOnProc = IR.GameState.coinsOnProc
-        end
-        if IR.MCMLoaded then
-            local savedIRConfig = IR.GameState.Config
-            if savedIRConfig.Version == IR.Config.Version then
-                for key, value in pairs(IR.Config) do
-                    IR.Config[key] = savedIRConfig[key]
+        if ISR.MCMLoaded then
+            local savedISRConfig = ISR.GameState.Config
+            if savedISRConfig.Version == ISR.Config.Version then
+                for key, value in pairs(ISR.Config) do
+                    ISR.Config[key] = savedISRConfig[key]
                 end
-            elseif savedIRConfig.Version ~= nil and savedIRConfig.Version ~= IR.Config.Version then
-                for key, value in pairs(IR.Config) do
-                    if savedIRConfig[key] ~= nil then
-                        IR.Config[key] = savedIRConfig[key]
+            elseif savedISRConfig.Version ~= nil and savedISRConfig.Version ~= ISR.Config.Version then
+                for key, value in pairs(ISR.Config) do
+                    if savedISRConfig[key] ~= nil then
+                        ISR.Config[key] = savedISRConfig[key]
                     end
                 end
-                IR.Config.Version = "1.9.1"
+                ISR.Config.Version = "1.6"
             end
         end
     end
 end
 
-IR:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, IR.onStart)
+ISR:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, ISR.onStart)
 
---------------------
--- Save Mod Data  --
---------------------
-function IR:onExit()
-    IR.GameState.fList = IR.monstermanual.fList
-    IR.GameState.hasEpicFetus = IR.fastbombs.hasEpicFetus
-    IR.GameState.hasDrFetus = IR.fastbombs.hasDrFetus
-    IR.GameState.hasHallow = IR.hallowedground.hasHallow
-    IR.GameState.coinsOnProc = IR.coinsOnProc
-    IR.GameState.Timer = IR.Timer
-    IR.GameState.Config = IR.Config
-    IR.Timer = 0
-    IR:SaveData(json.encode(IR.GameState))
+function ISR:onExit()
+    ISR.GameState.Transformations = ISR.Transformations
+    ISR.GameState.TintedGround = ISR.TintedGround
+    ISR.GameState.Config = ISR.Config
+    ISR:SaveData(json.encode(ISR.GameState))
 end
 
-IR:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, IR.onExit)
-IR:AddCallback(ModCallbacks.MC_POST_GAME_END, IR.onExit)
+ISR:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, ISR.onExit)
+ISR:AddCallback(ModCallbacks.MC_POST_GAME_END, ISR.onExit)
 
-function IR:onUpdate()
+function ISR:onUpdate()
     --------------------
     -- Initialization --
     --------------------
-    if Game():GetFrameCount() == 1 then
-        for playerNum = 1, Game():GetNumPlayers() do
-            local player = Game():GetPlayer(playerNum - 1)
-            IR.Timer = 0
-            IR.savedLuck = 0
-            IR.coinsOnProc = 0
-            IR.HasDadsLostCoin = false
-            IR.fastbombs.hasEpicFetus = false
-            IR.fastbombs.hasDrFetus = false
-            IR.hallowedground.hasHallow = false
-            IR.monstermanual.fList = {}
-            IR.monstermanual.famRNG:SetSeed(math.random(10000), math.random(10000))
-            player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS) 
-            player:EvaluateItems()
+    if Game:GetFrameCount() == 1 then
+        for playerNum = 1, Game:GetNumPlayers() do
+            local player = Game:GetPlayer(playerNum - 1)
+            -----------------------
+            -- Starting Trinkets --
+            -----------------------
+            if ISR.Config["StartingTrinketsIsaac"] and player:GetPlayerType() == PlayerType.PLAYER_ISAAC and player:GetTrinket(0) == 0 then
+                -- Innate: Golden Horse Shoe
+                -- Holding: Bag Lunch
+                player:AddTrinket(TrinketType.TRINKET_GOLDEN_HORSE_SHOE)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+                player:AddTrinket(TrinketType.TRINKET_BAG_LUNCH)
+            elseif ISR.Config["StartingTrinketsMagdalene"] and player:GetPlayerType() == PlayerType.PLAYER_MAGDALENA and player:GetTrinket(0) == 0 then
+                -- Innate: Purple Heart
+                -- Holding: Maggy's Faith
+                player:AddTrinket(TrinketType.TRINKET_PURPLE_HEART)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+                player:AddTrinket(TrinketType.TRINKET_MAGGYS_FAITH)
+            elseif ISR.Config["StartingTrinketsCain"] and player:GetPlayerType() == PlayerType.PLAYER_CAIN and player:GetTrinket(0) == 0 then
+                -- Innate: Lucky Toe
+                -- Holding: Paper Clip
+                player:AddTrinket(TrinketType.TRINKET_LUCKY_TOE)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+            elseif ISR.Config["StartingTrinketsJudas"] and player:GetPlayerType() == PlayerType.PLAYER_JUDAS and player:GetTrinket(0) == 0 then
+                -- Innate: Black Feather
+                -- Holding: Judas' Tongue
+                player:AddTrinket(TrinketType.TRINKET_BLACK_FEATHER)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+                player:AddTrinket(TrinketType.TRINKET_JUDAS_TONGUE)
+            elseif ISR.Config["StartingTrinketsXXX"] and player:GetPlayerType() == PlayerType.PLAYER_XXX and player:GetTrinket(0) == 0 then
+                -- Innate: Meconium
+                -- Holding: Petrified Poop
+                player:AddTrinket(TrinketType.TRINKET_MECONIUM)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+                player:AddTrinket(TrinketType.TRINKET_PETRIFIED_POOP)
+            elseif ISR.Config["StartingTrinketsEve"] and player:GetPlayerType() == PlayerType.PLAYER_EVE and player:GetTrinket(0) == 0 then
+                -- Innate: Daemon's Tail
+                -- Holding: Wish Bone
+                player:AddTrinket(TrinketType.TRINKET_DAEMONS_TAIL)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+                player:AddTrinket(TrinketType.TRINKET_WISH_BONE)
+            elseif ISR.Config["StartingTrinketsSamson"] and player:GetPlayerType() == PlayerType.PLAYER_SAMSON and player:GetTrinket(0) == 0 then
+                -- Innate: Samson's Lock
+                -- Holding: Child's Heart
+                player:AddTrinket(TrinketType.TRINKET_SAMSONS_LOCK)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+            elseif ISR.Config["StartingTrinketsAzazel"] and player:GetPlayerType() == PlayerType.PLAYER_AZAZEL and player:GetTrinket(0) == 0 then
+                -- Innate: A Missing Page
+                -- Holding: Curved Horn
+                player:AddTrinket(TrinketType.TRINKET_MISSING_PAGE)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+                player:AddTrinket(TrinketType.TRINKET_TAPE_WORM)
+            elseif ISR.Config["StartingTrinketsLazarus"] and player:GetPlayerType() == PlayerType.PLAYER_LAZARUS and player:GetTrinket(0) == 0 then
+                -- Innate: Lost Cork
+                -- Holding: Rosary Bead
+                player:AddTrinket(TrinketType.TRINKET_LOST_CORK)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+                player:AddTrinket(TrinketType.TRINKET_ROSARY_BEAD)
+            elseif ISR.Config["StartingTrinketsEden"] and player:GetPlayerType() == PlayerType.PLAYER_EDEN and player:GetTrinket(0) == 0 then
+                -- Innate: Error 404
+                player:AddTrinket(TrinketType.TRINKET_ERROR)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+            elseif ISR.Config["StartingTrinketsLost"] and player:GetPlayerType() == PlayerType.PLAYER_THELOST and player:GetTrinket(0) == 0 then
+                -- Innate: Faded Polaroid
+                -- Holding: Fragmented Card
+                player:AddTrinket(TrinketType.TRINKET_FADED_POLAROID)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+                player:AddTrinket(TrinketType.TRINKET_FRAGMENTED_CARD)
+            elseif ISR.Config["StartingTrinketsLilith"] and player:GetPlayerType() == PlayerType.PLAYER_LILITH and player:GetTrinket(0) == 0 then
+                -- Innate: Child Leash
+                -- Holding: Blind Rage
+                player:AddTrinket(TrinketType.TRINKET_CHILD_LEASH)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+                player:AddTrinket(TrinketType.TRINKET_BLIND_RAGE)
+            elseif ISR.Config["StartingTrinketsKeeper"] and player:GetPlayerType() == PlayerType.PLAYER_KEEPER and player:GetTrinket(0) == 0 then
+                -- Innate: Rib of Greed
+                -- Holding: Store Key
+                player:AddTrinket(TrinketType.TRINKET_RIB_OF_GREED)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+            elseif ISR.Config["StartingTrinketsApollyon"] and player:GetPlayerType() == PlayerType.PLAYER_APOLLYON and player:GetTrinket(0) == 0 then
+                -- Innate: Callus
+                -- Holding: Locus of Conquest
+                player:AddTrinket(TrinketType.TRINKET_CALLUS)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+                player:AddTrinket(TrinketType.TRINKET_LOCUST_OF_CONQUEST)
+            elseif ISR.Config["StartingTrinketsForgotten"] and player:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN and player:GetTrinket(0) == 0 then
+                -- Innate: Crow Heart
+                -- Holding: Finger Bone
+                player:AddTrinket(TrinketType.TRINKET_CROW_HEART)
+                player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, true, true)
+                player:AddTrinket(TrinketType.TRINKET_FINGER_BONE)            
+            end
         end
     end
-    IR.EntityList.Tears = Isaac.FindByType(EntityType.ENTITY_TEAR, -1, -1, false, false)
-    IR.EntityList.Enemies = Isaac.FindInRadius(Vector(640, 560), 1050, EntityPartition.ENEMY)
-    IR.EntityList.Familiars = Isaac.FindByType(EntityType.ENTITY_FAMILIAR, -1, -1, false, false)
-    IR.EntityList.Pickups = Isaac.FindByType(EntityType.ENTITY_PICKUP, -1, -1, false, false)
-    IR.Timer = IR.Timer + 1
-    for playerNum = 1, Game():GetNumPlayers() do
-        local player = Game():GetPlayer(playerNum - 1)
-        if not player:GetActiveItem() == CollectibleType.COLLECTIBLE_BEAN or not player:GetActiveItem() == CollectibleType.COLLECTIBLE_KIDNEY_BEAN or not player:GetActiveItem() == CollectibleType.COLLECTIBLE_MEGA_BEAN then
-            IR.ActiveItemTimer = 0
-        end
-        ---------------------
-        -- Dad's Lost Coin --
-        ---------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_DADS_LOST_COIN) and IR.Config["doDadsLostCoin"] then
-            local numCoins = player:GetNumCoins()
-            if not IR.HasDadsLostCoin then
-                IR.HasDadsLostCoin = true
-                player.Luck = player.Luck + (numCoins * IR.Config["DadsLostCoinLuck"]) + 0.1
-                IR.BonusLuck = player.Luck
-                balCoins = numCoins
-            end
-            if IR.HasDadsLostCoin and math.floor(player.Luck + 0.5) < math.floor(IR.BonusLuck + 0.5) then
-                IR.BonusLuck = IR.BonusLuck + (player.Luck - (IR.BonusLuck - (numCoins * IR.Config["DadsLostCoinLuck"])))
-                player.Luck = IR.BonusLuck
-            end
-            if IR.HasDadsLostCoin and numCoins > balCoins then
-                player.Luck = player.Luck + ((numCoins - balCoins) * IR.Config["DadsLostCoinLuck"])
-                IR.BonusLuck = player.Luck
-                balCoins = numCoins
-            end
-            if IR.HasDadsLostCoin and balCoins > numCoins then
-                player.Luck = player.Luck - ((balCoins - numCoins) * IR.Config["DadsLostCoinLuck"])
-                IR.BonusLuck = player.Luck
-                balCoins = numCoins
-            end
-            for i, entity in ipairs(IR.EntityList.Pickups) do
-                if entity.Variant == PickupVariant.PICKUP_COIN and entity.SubType == CoinSubType.COIN_LUCKYPENNY then
-                    local coinPos = entity.Position
-                    local coinVel = entity.Velocity
-                    entity:Remove()
-                    Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, CoinSubType.COIN_DOUBLEPACK, coinPos, coinVel, nil)
+    for playerNum = 1, Game:GetNumPlayers() do
+        local player = Game:GetPlayer(playerNum - 1)
+        ISR.EntityList.Bombs = Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.BOMB_EXPLOSION, -1, false, false)
+        local room = Game:GetRoom()
+        --------------------
+        -- Eternal Chests --
+        --------------------
+        if ISR.Config["doEternalChests"] then
+            for _, entity in pairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_ETERNALCHEST, -1, false, false)) do
+                local data = entity:GetData()
+                if data.EternalChestTimer == nil then
+                    data.EternalChestTimer = 0
+                elseif entity.SubType == ChestSubType.CHEST_CLOSED then
+                    data.EternalChestTimer = 0
+                elseif entity.SubType == ChestSubType.CHEST_OPENED then
+                    data.EternalChestTimer = data.EternalChestTimer + 1
+                end
+                if data.EternalChestTimer > 60 then
+                    data.EternalChestTimer = 0
+                    entity:ToPickup():Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_ETERNALCHEST, -1, false)
+                    if math.random(100) < 8 then
+                        player:AnimateTeleport(0)
+                        Isaac.ExecuteCommand("goto s.angel")
+                    end
                 end
             end
         end
-        --------------------
-        -- Breath of Life --
-        --------------------
-        if player:GetActiveItem() == CollectibleType.COLLECTIBLE_BREATH_OF_LIFE and IR.Config["doBreathOfLife"] then
-            if IR.BreathCooldown > 0 then
-                IR.BreathCooldown = IR.BreathCooldown - 1
+        ----------------------------------
+        -- The Conjoined Transformation --
+        ----------------------------------
+        if ISR.Transformations.hasConjoined and not player:HasPlayerForm(PlayerForm.PLAYERFORM_BABY) then
+            ISR.Transformations.hasConjoined = false
+        end
+        if player:HasPlayerForm(PlayerForm.PLAYERFORM_BABY) and not ISR.Transformations.hasConjoined and ISR.Config["doConjoined"] then
+            ISR.Transformations.hasConjoined = true
+            player:AddCollectible(CollectibleType.COLLECTIBLE_BELLY_BUTTON, 1, false)
+            Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TRINKET, TrinketType.TRINKET_CANCER, player.Position, Vector(0,0), player)
+        end
+        ------------------------------
+        -- The Right and Left Hands --
+        ------------------------------
+        if (player:GetTrinket(0) == TrinketType.TRINKET_RIGHT_HAND and player:GetTrinket(1) == TrinketType.TRINKET_LEFT_HAND) or (player:GetTrinket(0) == TrinketType.TRINKET_LEFT_HAND and player:GetTrinket(1) == TrinketType.TRINKET_RIGHT_HAND) and ISR.Config["doRightHand"] then
+            player:TryRemoveTrinket(TrinketType.TRINKET_RIGHT_HAND)
+            player:TryRemoveTrinket(TrinketType.TRINKET_LEFT_HAND)
+            SFXManager():Play(SoundEffect.SOUND_POWERUP_SPEWER, 1.0, 0, false, 1.0)
+            player:UsePill(PillEffect.PILLEFECT_DUALITY, PillColor.PILL_NULL)
+            player:AddCollectible(CollectibleType.COLLECTIBLE_EUCHARIST, 0, false)
+            player:AddCollectible(CollectibleType.COLLECTIBLE_DUALITY, 0, false)
+        end
+        ------------------------------
+        -- The Adult Transformation --
+        ------------------------------
+        if ISR.Transformations.hasAdult and not player:HasPlayerForm(PlayerForm.PLAYERFORM_ADULTHOOD) then
+            ISR.Transformations.hasAdult = false
+        end
+        if player:HasPlayerForm(PlayerForm.PLAYERFORM_ADULTHOOD) and not ISR.Transformations.hasAdult and ISR.Config["doAdult"] then
+            ISR.Transformations.hasAdult = true
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_DEPRESSION) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_DEPRESSION, 1, false)
             end
-            local BreathDelay = BreathDelay or 1000
-            BreathDelay = math.min(BreathDelay,player.FireDelay)
-            if player:GetActiveCharge() < 6 then
-                player.FireDelay = player.MaxFireDelay
+        end
+        --------------------------------
+        -- The Fun Guy Transformation --
+        --------------------------------
+        if ISR.Transformations.hasMushroom and not player:HasPlayerForm(PlayerForm.PLAYERFORM_MUSHROOM) then
+            ISR.Transformations.hasMushroom = false
+        end
+        if player:HasPlayerForm(PlayerForm.PLAYERFORM_MUSHROOM) and not ISR.Transformations.hasMushroom and ISR.Config["doMushroom"] then
+            ISR.Transformations.hasMushroom = true
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_ONE_UP) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_ONE_UP, 1, false)
+            end
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_MAGIC_MUSHROOM) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_MAGIC_MUSHROOM, 1, false)
+            end
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_MINI_MUSH) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_MINI_MUSH, 1, false)
+            end
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_ODD_MUSHROOM_RATE) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_ODD_MUSHROOM_RATE, 1, false)
+            end
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_ODD_MUSHROOM_DAMAGE) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_ODD_MUSHROOM_DAMAGE, 1, false)
+            end
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_BLUE_CAP) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_BLUE_CAP, 1, false)
+            end
+        end
+        --------------------------------
+        -- The Oh Crap Transformation --
+        --------------------------------
+        if not ISR.Transformations.hasCrap and ISR.Config["doCrap"] then
+            local hasCrapCounter = 0
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_BUTT_BOMBS) then
+                hasCrapCounter = hasCrapCounter + 1
+            end
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_NUMBER_ONE) then
+                hasCrapCounter = hasCrapCounter + 1
+            end
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_NUMBER_TWO) then
+                hasCrapCounter = hasCrapCounter + 1
+            end
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_POOP) then
+                hasCrapCounter = hasCrapCounter + 1
+            end
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_E_COLI) then
+                hasCrapCounter = hasCrapCounter + 1
+            end
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_FLUSH) then
+                hasCrapCounter = hasCrapCounter + 1
+            end
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_FARTING_BABY) then
+                hasCrapCounter = hasCrapCounter + 1
+            end
+            if hasCrapCounter > 2 then
+                local currentActiveItem = player:GetActiveItem()
+                local currentActiveCharge = player:GetActiveCharge()
+                if not player:HasCollectible(CollectibleType.COLLECTIBLE_E_COLI) then
+                    player:AddCollectible(CollectibleType.COLLECTIBLE_E_COLI, 1, false)
+                end
+                if not player:HasCollectible(CollectibleType.COLLECTIBLE_POOP) then
+                    player:AddCollectible(CollectibleType.COLLECTIBLE_POOP, 10, false)
+                end
+                if not player:HasCollectible(CollectibleType.COLLECTIBLE_FLUSH) then
+                    player:AddCollectible(CollectibleType.COLLECTIBLE_FLUSH, 10, false)
+                end
+                player:AddCollectible(currentActiveItem, currentActiveCharge, false)
             else
-                player.FireDelay = BreathDelay
-            end
-            if player:GetActiveCharge() == 0 and IR.BreathCooldown == 0 then
-                for Angle = 45, 315, 90 do
-                    local HolyLaser = EntityLaser.ShootAngle(5, player.Position, Angle, 15, Vector(0,0), player)
-                    HolyLaser.TearFlags = player.TearFlags
-                    HolyLaser.CollisionDamage = math.max((player.Damage * 2),38.46159)
-                end
-                IR.BreathCooldown = 30
+                hasCrapCounter = 0
             end
         end
-        ----------------
-        -- Holy Water --
-        ----------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_HOLY_WATER) or IR.monstermanual.MMholywater == true and IR.Config["doHolyWater"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                if entity.SpawnerType == EntityType.ENTITY_PLAYER then
-                    local data = entity:GetData()
-                    local tear = entity:ToTear()
-                    if data.initPool == nil then
-                        tear.CollisionDamage = (player.Damage * 1.1)
-                        data.initPool = 1
-                    end
-                    if (tear.Height >= -5 or tear:CollidesWithGrid()) and data.initPool == 1 then
-                        data.Pool = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL, 0, tear.Position, Vector(0,0), player):ToEffect()
-                        data.Pool.CollisionDamage = player.Damage / 4
-                        data.Pool:SetColor(Color(0.5,0.5,0,0,0,0,0),0,0,false,false)
-                        data.Pool.Scale = 2
-                    end
-                end
+        if ISR.Transformations.hasCrap and not player:HasPlayerForm(PlayerForm.PLAYERFORM_POOP) then
+            ISR.Transformations.hasCrap = false
+        end
+        if player:HasPlayerForm(PlayerForm.PLAYERFORM_POOP) and not ISR.Transformations.hasCrap and ISR.Config["doCrap"] then
+            ISR.Transformations.hasCrap = true
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_BUTT_BOMBS) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_BUTT_BOMBS, 1, false)
+            end
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_NUMBER_ONE) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_NUMBER_ONE, 1, false)
+            end
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_NUMBER_TWO) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_NUMBER_TWO, 1, false)
+            end
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_E_COLI) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_E_COLI, 1, false)
+            end
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_FARTING_BABY) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_FARTING_BABY, 1, false)
             end
         end
-        ----------
-        -- Abel --
-        ----------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_ABEL) and IR.Config["doAbel"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                if entity.SpawnerVariant == FamiliarVariant.ABEL and entity.FrameCount < 1 then
-                    local tear = entity:ToTear()
-                    tear.Scale = 1.1
-                    tear.TearFlags = TearFlags.TEAR_LUDOVICO
-                    tear.CollisionDamage = 0.8
-                end
-            end
+        ------------------------------------
+        -- The Spider Baby Transformation --
+        ------------------------------------
+        if ISR.Transformations.hasSpiderBaby and not player:HasPlayerForm(PlayerForm.PLAYERFORM_SPIDERBABY) then
+            ISR.Transformations.hasSpiderBaby = false
         end
-        -------------------
-        -- Brother Bobby --
-        -------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_BROTHER_BOBBY) and IR.Config["doBrotherBobby"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                if entity.SpawnerVariant == FamiliarVariant.BROTHER_BOBBY and entity.FrameCount < 1 then
-                    local tear = entity:ToTear()
-                    tear.Scale = 1.1
-                    tear.CollisionDamage = math.max((player.Damage/3),3.5)
-                end
+        if player:HasPlayerForm(PlayerForm.PLAYERFORM_SPIDERBABY) and not ISR.Transformations.hasSpiderBaby and ISR.Config["doSpiderBaby"] then
+            ISR.Transformations.hasSpiderBaby = true
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_SPIDER_BITE) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_SPIDER_BITE, 1, false)
             end
-        end
-        ------------------
-        -- Sister Maggy --
-        ------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_SISTER_MAGGY) and IR.Config["doSisterMaggy"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                if entity.SpawnerVariant == FamiliarVariant.SISTER_MAGGY and entity.FrameCount < 1 then
-                    local tear = entity:ToTear()
-                    tear.Scale = 1.1
-                    tear.CollisionDamage = math.max((player.Damage/2),5)
-                end
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_SPIDER_MOD) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_SPIDER_MOD, 1, false)
             end
-        end
-        ------------------
-        -- Rainbow Baby --
-        ------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_RAINBOW_BABY) and IR.Config["doRainbowBaby"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                if entity.SpawnerVariant == FamiliarVariant.RAINBOW_BABY and entity.FrameCount < 1 then
-                    local tear = entity:ToTear()
-                    tear.CollisionDamage = (math.random(math.ceil(player.Damage))^1.4)
-                end
-            end
-        end
-        ------------------
-        -- Glass Cannon --
-        ------------------
-        if player:GetActiveItem() == CollectibleType.COLLECTIBLE_GLASS_CANNON and IR.Config["doGlassCannon"] then
-            local CannonDelay = CannonDelay or 1000
-            CannonDelay = math.min(CannonDelay,player.FireDelay)
-            if player:GetActiveCharge() < 80 then
-                player.FireDelay = player.MaxFireDelay
-                IR.glasscannon.doGCBatterySound = true
-                if player:GetActiveCharge() == 0 and IR.glasscannon.hasCooldown == false then
-                    IR.glasscannon.redhealth = IR.glasscannon.redhealth or 0
-                    IR.glasscannon.bluehealth = IR.glasscannon.bluehealth or 0
-                    IR.glasscannon.blackhealth = IR.glasscannon.blackhealth or 0
-                    IR.glasscannon.bonehealth = IR.glasscannon.bonehealth or 0
-                    player:AddMaxHearts(-IR.glasscannon.redhealth)
-                    player:AddSoulHearts(-IR.glasscannon.bluehealth)
-                    player:AddBlackHearts(-IR.glasscannon.blackhealth)
-                    player:AddBoneHearts(-IR.glasscannon.bonehealth)
-                    player:AddBoneHearts(math.floor(IR.glasscannon.redhealth/2 + 0.5) + math.floor(IR.glasscannon.bluehealth/2 + 0.5) + math.floor(IR.glasscannon.blackhealth/2 + 0.5) + IR.glasscannon.bonehealth)
-                    IR.glasscannon.hasCooldown = true
-                end
-            elseif player:GetActiveCharge() == 80 then
-                player.FireDelay = CannonDelay
-                if IR.glasscannon.doGCBatterySound == true then
-                    SFXManager():Play(SoundEffect.SOUND_BATTERYCHARGE, 1.0, 0, false, 1.0)
-                    IR.glasscannon.doGCBatterySound = false
-                end
-                IR.glasscannon.bonehealth = (player:GetBoneHearts())
-                IR.glasscannon.redhealth = player:GetMaxHearts()
-                IR.glasscannon.bluehealth = player:GetSoulHearts()
-                IR.glasscannon.blackhealth = player:GetBlackHearts()
-                IR.glasscannon.hasCooldown = false
-            end
-        end
-        -------------------
-        -- Isaac's Heart --
-        -------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_ISAACS_HEART) and IR.Config["doIsaacsHeart"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                if entity.SpawnerType == EntityType.ENTITY_PLAYER then
-                    local data = entity:GetData()
-                    local tear = entity:ToTear()
-                    if data.initHeart == nil then
-                        if math.random(10) < (IR.Config["IsaacsHeartChance"] + 1) then
-                            tear.TearFlags = player.TearFlags | TearFlags.TEAR_HP_DROP
-                        end
-                        entity:SetColor(Color(1.0,0.0,0.0,1.0,0,0,0),0,0,false,false)
-                        data.initHeart = 1
-                    end
-                end
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_SPIDERBABY) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_SPIDERBABY, 1, false)
             end
         end
         ----------------------------
-        -- Dataminer (20% chance) --
+        -- The Bob Transformation --
         ----------------------------
-        if IR.dataminer.DMroom == Game():GetLevel():GetCurrentRoomIndex() and IR.dataminer.usedDM == true and IR.Config["doDataminer"] then
-            if player:HasCollectible(CollectibleType.COLLECTIBLE_BROKEN_MODEM) and IR.dataminer.hasModem == false then
-                Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TRINKET, TrinketType.TRINKET_ERROR, player.Position, Vector(0,0), nil)
-                player:RemoveCollectible(CollectibleType.COLLECTIBLE_BROKEN_MODEM)
-                IR.dataminer.hasModem = true
-                IR.dataminer.hadModem = true
+        if not ISR.Transformations.hasBob and ISR.Config["doBob"] then
+            local hasBobCounter = 0
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_BOBS_BRAIN) then
+                hasBobCounter = hasBobCounter + 1
             end
-            if not player:HasCollectible(CollectibleType.COLLECTIBLE_BROKEN_MODEM) and IR.dataminer.hasModem == false then
-                player:AddCollectible(CollectibleType.COLLECTIBLE_BROKEN_MODEM, 0, false)
-                IR.dataminer.hasModem = true
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_BOBS_CURSE) then
+                hasBobCounter = hasBobCounter + 1
             end
-        else
-            if IR.dataminer.hadModem == false and IR.dataminer.usedDM == true and IR.Config["doDataminer"] then
-                player:RemoveCollectible(CollectibleType.COLLECTIBLE_BROKEN_MODEM)
-                IR.dataminer.usedDM = false
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_IPECAC) then
+                hasBobCounter = hasBobCounter + 1
             end
-        end
-        ----------------
-        -- Cursed Eye --
-        ----------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_CURSED_EYE) and IR.Config["doCursedEye"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                if entity.SpawnerType == EntityType.ENTITY_PLAYER then
-                    local data = entity:GetData()
-                    local tear = entity:ToTear()
-                    if data.initCursedEye == nil then
-                        if math.random(10) < (IR.Config["CursedEyeChance"] + 1) then
-                            tear.TearFlags = player.TearFlags | TearFlags.TEAR_PERMANENT_CONFUSION
-                            entity:SetColor(Color(0.0,0.0,0.0,1.0,0,0,0),0,0,false,false)
-                        end
-                        data.initCursedEye = 1
-                    end
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_BOBS_ROTTEN_HEAD) then
+                hasBobCounter = hasBobCounter + 1
+            end
+            if player:HasTrinket(TrinketType.TRINKET_BOBS_BLADDER) then
+                hasBobCounter = hasBobCounter + 1
+            end
+            if hasBobCounter > 2 then
+                local currentActiveItem = player:GetActiveItem()
+                local currentActiveCharge = player:GetActiveCharge()
+                if not player:HasCollectible(CollectibleType.COLLECTIBLE_BOBS_CURSE) then
+                    player:AddCollectible(CollectibleType.COLLECTIBLE_BOBS_CURSE, 1, false)
                 end
-            end
-        end
-        -----------------------------------------
-        -- Hallowed Ground (on initial pickup) --
-        -----------------------------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_HALLOWED_GROUND) and IR.Config["doHallowedGround"] then
-            player:RemoveCollectible(CollectibleType.COLLECTIBLE_HALLOWED_GROUND)
-            if player:GetActiveItem() == 0 then
-                player:AddCollectible(IR.hallowedground.Item, 1, false)
+                if not player:HasCollectible(CollectibleType.COLLECTIBLE_IPECAC) then
+                    player:AddCollectible(CollectibleType.COLLECTIBLE_IPECAC, 1, false)
+                end
+                if not player:HasCollectible(CollectibleType.COLLECTIBLE_BOBS_ROTTEN_HEAD) then
+                    player:AddCollectible(CollectibleType.COLLECTIBLE_BOBS_ROTTEN_HEAD, 10, false)
+                end
+                player:AddCollectible(currentActiveItem, currentActiveCharge, false)
             else
-                Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, IR.hallowedground.Item, Isaac.GetFreeNearPosition(player.Position, 20), Vector(0,0), nil)
+                hasBobCounter = 0
             end
         end
-        if player:GetActiveItem() == IR.hallowedground.Item and not IR.hallowedground.hasHallow and IR.Config["doHallowedGround"] then
-            player:RemoveCollectible(IR.hallowedground.Item)
-            player:AddCollectible(IR.hallowedground.Item, 1, false)
-            IR.hallowedground.hasHallow = true
+        if ISR.Transformations.hasBob and not player:HasPlayerForm(PlayerForm.PLAYERFORM_BOB) then
+            ISR.Transformations.hasBob = false
         end
-        -----------------
-        -- God's Flesh --
-        -----------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_GODS_FLESH) and IR.Config["doGodsFlesh"] then
-            for _, entity in pairs(Isaac.FindInRadius(player.Position, 30, EntityPartition.ENEMY)) do
-                if entity:IsVulnerableEnemy() and entity:HasEntityFlags(EntityFlag.FLAG_SHRINK) then
-                    SFXManager():Play(SoundEffect.SOUND_DEATH_BURST_SMALL, 1.0, 0, false, 1.0)
-                    entity:Remove()
-                end
+        if player:HasPlayerForm(PlayerForm.PLAYERFORM_BOB) and not ISR.Transformations.hasBob and ISR.Config["doBob"] then
+            ISR.Transformations.hasBob = true
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_BOBS_BRAIN) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_BOBS_BRAIN, 1, false)
+            end
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_BOBS_CURSE) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_BOBS_CURSE, 1, false)
+            end
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_IPECAC) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_IPECAC, 1, false)
+            end
+            if not player:HasTrinket(TrinketType.TRINKET_BOBS_BLADDER) then
+                Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TRINKET, TrinketType.TRINKET_BOBS_BLADDER, player.Position, Vector(0,0), player)
             end
         end
-        --------------------
-        -- Monster Manual --
-        --------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_MONSTER_MANUAL) and IR.Config["doMonsterManual"] then
-            player:RemoveCollectible(CollectibleType.COLLECTIBLE_MONSTER_MANUAL)
-            player:AddCollectible(IR.monstermanual.Item, 3, false)
+        ---------------------------------
+        -- The Seraphim Transformation --
+        ---------------------------------
+        if ISR.Transformations.hasSeraphim and not player:HasPlayerForm(PlayerForm.PLAYERFORM_ANGEL) then
+            ISR.Transformations.hasSeraphim = false
         end
-        --------------
-        -- Best Bud --
-        --------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_BEST_BUD) and IR.Config["doBestBud"] then
-            for _, entity in pairs(Isaac.FindInRadius(player.Position, 200, EntityPartition.FAMILIAR)) do
-                if entity.Variant == FamiliarVariant.BEST_BUD then
-                    local bestbud = entity
-                    for _, entity in pairs(Isaac.FindInRadius(bestbud.Position, 15, EntityPartition.BULLET)) do
-                        SFXManager():Play(SoundEffect.SOUND_TEARIMPACTS, 1.0, 0, false, 1.0)
-                        entity:Kill()
-                    end
-                end
+        if player:HasPlayerForm(PlayerForm.PLAYERFORM_ANGEL) and not ISR.Transformations.hasSeraphim and ISR.Config["doSeraphim"] then
+            ISR.Transformations.hasSeraphim = true
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_SOUL) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_SOUL, 1, false)
             end
         end
-        -----------------
-        -- Tiny Planet --
-        -----------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_TINY_PLANET) and IR.Config["doTinyPlanet"] then
-            for i, entity in ipairs(IR.EntityList.Tears) do
-                local data = entity:GetData()
-                local tear = entity:ToTear()
-                if entity.SpawnerType == EntityType.ENTITY_PLAYER and entity.FrameCount < 2 and data.initPlanet == nil then
-                    tear.Position = Vector(player.Position.X + math.cos(0.15 * player.FrameCount) * math.random(60,120), player.Position.Y + math.sin(0.15 * player.FrameCount) * math.random(60,120))
-                    tear.FallingSpeed = 0
-                    tear.FallingAcceleration = -0.1
-                    data.initPlanet = 1
+        ---------------------------------
+        -- The Beelzbub Transformation --
+        ---------------------------------
+        if ISR.Transformations.hasBeelzbub and not player:HasPlayerForm(PlayerForm.PLAYERFORM_LORD_OF_THE_FLIES) then
+            ISR.Transformations.hasBeelzbub = false
+        end
+        if player:HasPlayerForm(PlayerForm.PLAYERFORM_LORD_OF_THE_FLIES) and not ISR.Transformations.hasBeelzbub and ISR.Config["doBeelzbub"] then
+            ISR.Transformations.hasBeelzbub = true
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_MULLIGAN) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_MULLIGAN, 1, false)
+            end
+            player:AddCollectible(CollectibleType.COLLECTIBLE_HALO_OF_FLIES, 1, false)
+            player:AddCollectible(CollectibleType.COLLECTIBLE_HALO_OF_FLIES, 1, false)
+        end
+        --------------------------------
+        -- The Magneto Transformation --
+        --------------------------------
+        if not ISR.Transformations.hasMagneto and ISR.Config["doMagneto"] then
+            local hasMagnetoCounter = 0
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_MAGNETO) then
+                hasMagnetoCounter = hasMagnetoCounter + 1
+            end
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_STRANGE_ATTRACTOR) then
+                hasMagnetoCounter = hasMagnetoCounter + 1
+            end
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_METAL_PLATE) then
+                hasMagnetoCounter = hasMagnetoCounter + 1
+            end
+            if player:HasTrinket(TrinketType.TRINKET_SUPER_MAGNET) then
+                hasMagnetoCounter = hasMagnetoCounter + 1
+            end
+            if player:HasTrinket(TrinketType.TRINKET_BROKEN_MAGNET) then
+                hasMagnetoCounter = hasMagnetoCounter + 1
+            end
+            if hasMagnetoCounter > 1 then
+                player:AddNullCostume(Isaac.GetCostumeIdByPath("gfx/characters/magneto.anm2"))
+                SFXManager():Play(SoundEffect.SOUND_POWERUP_SPEWER, 1.0, 0, false, 1.0)
+                player:UsePill(PillEffect.PILLEFECT_MAGNETO, PillColor.PILL_NULL)
+                if not player:HasCollectible(CollectibleType.COLLECTIBLE_MAGNETO) then
+                    player:AddCollectible(CollectibleType.COLLECTIBLE_MAGNETO, 1, false)
                 end
-                if data.initPlanet ~= nil and entity.FrameCount > 150 then
-                    tear.FallingAcceleration = 0.1
+                if not player:HasCollectible(CollectibleType.COLLECTIBLE_STRANGE_ATTRACTOR) then
+                    player:AddCollectible(CollectibleType.COLLECTIBLE_STRANGE_ATTRACTOR, 1, false)
                 end
+                if not player:HasCollectible(CollectibleType.COLLECTIBLE_METAL_PLATE) then
+                    player:AddCollectible(CollectibleType.COLLECTIBLE_METAL_PLATE, 1, false)
+                end
+                if not player:HasTrinket(TrinketType.TRINKET_SUPER_MAGNET) then
+                    Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TRINKET, TrinketType.TRINKET_SUPER_MAGNET, player.Position, Vector(0,0), player)
+                end
+                ISR.Transformations.hasMagneto = true
+            else
+                hasMagnetoCounter = 0
             end
         end
-        -----------------
-        -- Kidney Bean --
-        -----------------
-        if player:GetActiveItem() == CollectibleType.COLLECTIBLE_KIDNEY_BEAN and player:GetActiveCharge() < 4 and IR.ActiveItemTimer == 0 then
-            player:SetActiveCharge(player:GetActiveCharge() + 1)
-            SFXManager():Stop(SoundEffect.SOUND_BEEP, 1.0, 0, false, 1.0)
-            IR.ActiveItemTimer = 90
-        elseif IR.ActiveItemTimer > 0 then
-            IR.ActiveItemTimer = IR.ActiveItemTimer - 1
+        if not player:HasCollectible(CollectibleType.COLLECTIBLE_MAGNETO) and ISR.Transformations.hasMagneto then
+            player:TryRemoveNullCostume(Isaac.GetCostumeIdByPath("gfx/characters/magneto.anm2"))
+            ISR.Transformations.hasMagneto = false
         end
-        --------------
-        -- The Bean --
-        --------------
-        if player:GetActiveItem() == CollectibleType.COLLECTIBLE_BEAN and player:GetActiveCharge() < 4 and IR.ActiveItemTimer == 0 then
-            player:SetActiveCharge(player:GetActiveCharge() + 1)
-            SFXManager():Stop(SoundEffect.SOUND_BEEP, 1.0, 0, false, 1.0)
-            IR.ActiveItemTimer = 90
-        elseif IR.ActiveItemTimer > 0 then
-            IR.ActiveItemTimer = IR.ActiveItemTimer - 1
-        end
-        ---------------
-        -- Mega Bean --
-        ---------------
-        if player:GetActiveItem() == CollectibleType.COLLECTIBLE_MEGA_BEAN and player:GetActiveCharge() < 8 and IR.ActiveItemTimer == 0 then
-            player:SetActiveCharge(player:GetActiveCharge() + 1)
-            SFXManager():Stop(SoundEffect.SOUND_BEEP, 1.0, 0, false, 1.0)
-            IR.ActiveItemTimer = 180
-        elseif IR.ActiveItemTimer > 0 then
-            IR.ActiveItemTimer = IR.ActiveItemTimer - 1
-        end
-        ---------------
-        -- Hourglass --
-        ---------------
-        if player:GetActiveItem() == CollectibleType.COLLECTIBLE_HOURGLASS and IR.ActiveItemRoom == Game():GetLevel():GetCurrentRoomIndex() and Game():GetLevel():GetCurrentRoomDesc().Clear == false and IR.Config["doHourglass"] then
-            for _, entity in ipairs(IR.EntityList.Enemies) do
-                if entity:IsVulnerableEnemy() == true and entity:IsBoss() == false then
-                    if entity:HasEntityFlags(EntityFlag.FLAG_SLOW) == false and IR.ActiveItemTimer > 0 then
-                        entity:AddEntityFlags(EntityFlag.FLAG_SLOW)
-                        IR.ActiveItemTimer = IR.ActiveItemTimer - 1
-                    elseif IR.ActiveItemTimer == 0 then
-                        IR.ActiveItemLimit = true
-                        entity:ClearEntityFlags(EntityFlag.FLAG_SLOW)
-                    end
-                end
-            end
-        end
-        ---------------
-        -- Mom's Pad --
-        ---------------
-        if player:GetActiveItem() == CollectibleType.COLLECTIBLE_MOMS_PAD and IR.ActiveItemRoom == Game():GetLevel():GetCurrentRoomIndex() and Game():GetLevel():GetCurrentRoomDesc().Clear == false and IR.Config["doMomsPad"] and not IR.ActiveItemLimit then
-            for _, entity in ipairs(IR.EntityList.Enemies) do
-                if entity:IsVulnerableEnemy() == true and entity:IsBoss() == false then
-                    if entity:HasEntityFlags(EntityFlag.FLAG_FEAR) == false and IR.ActiveItemTimer > 0 then
-                        entity:AddEntityFlags(EntityFlag.FLAG_FEAR)
-                        IR.ActiveItemTimer = IR.ActiveItemTimer - 1
-                    elseif IR.ActiveItemTimer == 0 then
-                        IR.ActiveItemLimit = true
-                        entity:ClearEntityFlags(EntityFlag.FLAG_FEAR)
-                    end
-                end
-            end
-        end
-        ---------------
-        -- Mom's Bra --
-        ---------------
-        if player:GetActiveItem() == CollectibleType.COLLECTIBLE_MOMS_BRA and IR.ActiveItemRoom == Game():GetLevel():GetCurrentRoomIndex() and Game():GetLevel():GetCurrentRoomDesc().Clear == false and IR.Config["doMomsBra"] and not IR.ActiveItemLimit then
-            for _, entity in ipairs(IR.EntityList.Enemies) do
-                if entity:IsVulnerableEnemy() == true and entity:IsBoss() == false then
-                    if entity:HasEntityFlags(EntityFlag.FLAG_FREEZE) == false and IR.ActiveItemTimer > 0 then
-                        entity:AddEntityFlags(EntityFlag.FLAG_SLOW)
-                        IR.ActiveItemTimer = IR.ActiveItemTimer - 1
-                    elseif IR.ActiveItemTimer == 0 then
-                        IR.ActiveItemLimit = true
-                        entity:ClearEntityFlags(EntityFlag.FLAG_SLOW)
-                    end
-                end
-            end
-        end
-        --------------
-        -- Scissors --
-        --------------
-        if player:GetActiveItem() == CollectibleType.COLLECTIBLE_SCISSORS and IR.Config["doScissors"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                if entity.SpawnerVariant == FamiliarVariant.SCISSORS and entity.FrameCount < 1 then
-                    local tear = entity:ToTear()
-                    tear.Scale = 1.1
-                    tear.CollisionDamage = player.Damage
-                    tear.TearFlags = player.TearFlags
-                end
-            end
-        end
-        -----------------------
-        -- Strange Attractor --
-        -----------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_STRANGE_ATTRACTOR) and player:HasCollectible(CollectibleType.COLLECTIBLE_LUDOVICO_TECHNIQUE) == false and player:HasCollectible(CollectibleType.COLLECTIBLE_ANTI_GRAVITY) == false and IR.Config["doStrangeAttactor"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                local data = entity:GetData()
-                local tear = entity:ToTear()
-                if entity.SpawnerType == EntityType.ENTITY_PLAYER and entity.FrameCount < 1 and data.initStrange == nil then
-                    tear.TearFlags = ((player.TearFlags % ((TearFlags.TEAR_ATTRACTOR) + (TearFlags.TEAR_ATTRACTOR)) >= (TearFlags.TEAR_ATTRACTOR)) and player.TearFlags - (TearFlags.TEAR_ATTRACTOR) or player.TearFlags)
-                    data.initStrange = 1
-                elseif entity.SpawnerType == EntityType.ENTITY_PLAYER and entity.FrameCount > IR.Config["StrangeAttractorDist"] and data.initStrange ~= nil then
-                    tear.TearFlags = player.TearFlags | TearFlags.TEAR_ATTRACTOR
-                end
-            end
-        end
-        ------------
-        -- Plan C --
-        ------------
-        if IR.planc.usedPlanC == true and player:IsDead() and IR.Config["doPlanC"] then
-            IR.planc.deathDelay = IR.planc.deathDelay - 1
-            if IR.planc.deathDelay == -2 then
-                local attempt = 0
-                local playername = player:GetName()
-                local continue = true
-                while continue do
-                    player:AddCollectible(1, 0, false) 
-                    player:UseActiveItem(CollectibleType.COLLECTIBLE_CLICKER, false, false, true, false)
-                    attempt = attempt + 1
-                    if player:GetPlayerType() == 4 then
-                        continue = false
-                    end
-                    if attempt >= 150 and player:GetName() == playername then
-                        continue = false
-                    end
-                end
-                if attempt >= 150 then 
-                    player:Kill()
-                else
-                    player:Revive()
-                    player:AddMaxHearts(-player:GetMaxHearts())
-                    player:AddSoulHearts(-player:GetSoulHearts())
-                    player:AddBlackHearts(-player:GetBlackHearts())
-                    player:AddBoneHearts(-player:GetBoneHearts())
-                    player:AddSoulHearts(6)
-                    Game():GetLevel().EnterDoor = -1
-                    Game():GetLevel().LeaveDoor = -1
-                    Game():ChangeRoom(84)
-                end
-                IR.planc.deathDelay = 50
-                IR.planc.usedPlanC = false
-            end
-        end
-        ----------------
-        -- Fast Bombs --
-        ----------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_FAST_BOMBS) and player:HasCollectible(CollectibleType.COLLECTIBLE_EPIC_FETUS) and not IR.fastbombs.hasEpicFetus and IR.Config["doFastBombs"] then
-            player:AddCollectible(CollectibleType.COLLECTIBLE_MARKED, 0, false)
-            IR.fastbombs.hasEpicFetus = true
-        end
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_FAST_BOMBS) and player:HasCollectible(CollectibleType.COLLECTIBLE_DR_FETUS) and not IR.fastbombs.hasDrFetus and IR.Config["doFastBombs"] then
-            player:AddCacheFlags(CacheFlag.CACHE_FIREDELAY)
-            player:EvaluateItems()
-            IR.fastbombs.hasDrFetus = true
-        end
-        ---------------
-        -- King Baby --
-        ---------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_KING_BABY) and IR.kingbaby.proccessFamiliars and IR.Config["doKingBaby"] then
-            local index = 1
-            for _, entity in ipairs(IR.EntityList.Familiars) do
-                familiar = entity:ToFamiliar()
-                if familiar.IsFollower and familiar.Variant ~= FamiliarVariant.KING_BABY then
-                    familiar:GetData().OrbitIndex = index
-                    index = index + 1
-                end
-            end
-            IR.kingbaby.proccessFamiliars = false
-        elseif player:HasCollectible(CollectibleType.COLLECTIBLE_KING_BABY) and IR.Config["doKingBaby"] then
-            for _, entity in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FamiliarVariant.KING_BABY, -1, false, false)) do
-                entity:ToFamiliar():FollowParent()
-            end
-        end
-        -------------
-        -- Magneto --
-        -------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_MAGNETO) and IR.Config["doMagneto"] then
-            for _, entity in ipairs(Isaac.FindInRadius(player.Position, 30, EntityPartition.BULLET)) do
+        if ISR.Transformations.hasMagneto == true and ISR.Config["doMagneto"] then
+            for _, entity in ipairs(Isaac.FindInRadius(player.Position, 40, EntityPartition.BULLET)) do
                 if entity.SpawnerType ~= EntityType.ENTITY_PLAYER and entity:GetData().initMagneto == nil then
                     entity:GetData().initMagneto = 1
-                    if math.random(4) < 2 then
-                        entity = entity:ToProjectile()
-                        entity.Velocity = -entity.Velocity * 0.8
-                        entity.Parent = player
-                        entity.SpawnerEntity = player
-                        entity:AddProjectileFlags(ProjectileFlags.CANT_HIT_PLAYER | ProjectileFlags.ANY_HEIGHT_ENTITY_HIT | ProjectileFlags.HIT_ENEMIES)
-                    end
+                    entity = entity:ToProjectile()
+                    entity.Velocity = -entity.Velocity * 0.8
+                    entity.Parent = player
+                    entity.SpawnerEntity = player
+                    entity:AddProjectileFlags(ProjectileFlags.CANT_HIT_PLAYER | ProjectileFlags.ANY_HEIGHT_ENTITY_HIT | ProjectileFlags.HIT_ENEMIES)
                 end
             end
         end
-        --------------------
-        -- Blood Shot Eye --
-        --------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_BLOODSHOT_EYE) and IR.Config["doBloodshotEye"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                if entity.SpawnerVariant == FamiliarVariant.BLOODSHOT_EYE and entity.FrameCount < 1 then
-                    local tear = entity:ToTear()
-                    local laser = player:FireTechLaser(tear.Position, LaserOffset.LASER_TECH1_OFFSET, tear.Velocity, false, false)
-                    laser.DisableFollowParent = true
-                    laser.CollisionDamage = 20
-                    entity:Remove()
-                end
+        ------------------------------
+        -- Cain's Other Eye Synergy --
+        ------------------------------
+        if player:GetPlayerType() == PlayerType.PLAYER_CAIN and player:HasCollectible(CollectibleType.COLLECTIBLE_CAINS_OTHER_EYE) and ISR.Config["doCainsOtherEye"] then
+            if not player:HasCollectible(CollectibleType.COLLECTIBLE_20_20) then
+                player:AddCollectible(CollectibleType.COLLECTIBLE_20_20, 0, false)
             end
         end
-        -----------------
-        -- Common Cold --
-        -----------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_COMMON_COLD) and IR.Config["doCommonCold"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                if entity.SpawnerType == EntityType.ENTITY_FAMILIAR and math.random(10) > 5 and entity.FrameCount < 1 then
-                    entity:ToTear().TearFlags = entity:ToTear().TearFlags | TearFlags.TEAR_POISON
-                    entity:SetColor(Color(0.3,0.9,0.1,0.9,0,0,0),0,0,false,false)
-                end
-            end
-        end
-        ----------------------
-        -- Cain's Other Eye --
-        ----------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_CAINS_OTHER_EYE) and IR.Config["doCainsOtherEye"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                if entity.SpawnerVariant == FamiliarVariant.CAINS_OTHER_EYE then
-                    entity:Remove()
-                end
-                if entity.SpawnerType == EntityType.ENTITY_PLAYER and entity:GetData().initOtherEye == nil and entity.FrameCount == 0 then
-                    for _, target in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FamiliarVariant.CAINS_OTHER_EYE, -1, false, false)) do
-                        local Tear = player:FireTear(target.Position, entity.Velocity, false, true, false)
-                        Tear:GetData().initOtherEye = true
-                    end
-                end
-            end
-        end
-        --------------
-        -- Placenta --
-        --------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_PLACENTA) and IR.Config["doPlacenta"] then
-            if IR.Timer % 900 == 0 and player:CanPickRedHearts() then
-                SFXManager():Play(SoundEffect.SOUND_VAMP_GULP, 1.0, 0, false, 1.0)
-                Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.HEART, 0, player.Position, player.Velocity, nil)
-                player:AddHearts(1)
-            end
-        end
-        ----------------
-        -- Ghost Baby --
-        ----------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_GHOST_BABY) and IR.Config["doGhostBaby"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                if entity.SpawnerType == EntityType.ENTITY_FAMILIAR and entity.FrameCount < 1 then
-                    entity:ToTear().TearFlags = entity:ToTear().TearFlags | TearFlags.TEAR_SPECTRAL
-                end
-                if entity.SpawnerVariant == FamiliarVariant.GHOST_BABY and entity.FrameCount < 1 then
-                    local tear = entity:ToTear()
-                    tear.CollisionDamage = math.max((player.Damage/3),3.5)
-                end
-            end
-        end
-        ---------------
-        -- Yum Heart --
-        ---------------
-        if IR.Config["doYumHeart"] then
-            if player:HasCollectible(IR.yumheart.Eternal) and player:GetHearts() == 24 then
-                local ActiveItemCharge = player:GetActiveCharge()
-                player:AddCollectible(IR.yumheart.OneUp, ActiveItemCharge, false)
-            end
-            if player:HasCollectible(IR.yumheart.Black) and not player:CanPickBlackHearts() then
-                local ActiveItemCharge = player:GetActiveCharge()
-                player:AddCollectible(IR.yumheart.Eternal, ActiveItemCharge, false)
-            end
-            if player:HasCollectible(IR.yumheart.Soul) and not player:CanPickSoulHearts() then
-                local ActiveItemCharge = player:GetActiveCharge()
-                player:AddCollectible(IR.yumheart.Black, ActiveItemCharge, false)
-            end
-            if player:HasCollectible(CollectibleType.COLLECTIBLE_YUM_HEART) and not player:CanPickRedHearts() then
-                local ActiveItemCharge = player:GetActiveCharge()
-                player:AddCollectible(IR.yumheart.Soul, ActiveItemCharge, false)
-            end
-            if player:HasCollectible(IR.yumheart.OneUp) and player:GetHearts() < 24 then
-                player:AddCollectible(IR.yumheart.Eternal, 0, false)
-            end
-            if player:HasCollectible(IR.yumheart.Eternal) and player:CanPickBlackHearts() then
-                player:AddCollectible(IR.yumheart.Black, 0, false)
-            end
-            if player:HasCollectible(IR.yumheart.Black) and player:CanPickSoulHearts() then
-                player:AddCollectible(IR.yumheart.Soul, 0, false)
-            end
-            if player:HasCollectible(IR.yumheart.OneUp) and player:CanPickRedHearts() then
-                player:AddCollectible(CollectibleType.COLLECTIBLE_YUM_HEART, 0, false)
-            end
-            if player:HasCollectible(IR.yumheart.Eternal) and player:CanPickRedHearts() then
-                player:AddCollectible(CollectibleType.COLLECTIBLE_YUM_HEART, 0, false)
-            end
-            if player:HasCollectible(IR.yumheart.Black) and player:CanPickRedHearts() then
-                player:AddCollectible(CollectibleType.COLLECTIBLE_YUM_HEART, 0, false)
-            end
-            if player:HasCollectible(IR.yumheart.Soul) and player:CanPickRedHearts() then
-                player:AddCollectible(CollectibleType.COLLECTIBLE_YUM_HEART, 0, false)
-            end
-        end
-        ----------------
-        -- Lucky Foot --
-        ----------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_LUCKY_FOOT) and IR.Config["doLuckyFoot"] then
-            if player:GetNumCoins() ~= IR.coinsOnProc then
-                if player:GetNumCoins() % 14 == 0 and player:GetNumCoins() > 0 and not player:HasCollectible(CollectibleType.COLLECTIBLE_STEAM_SALE) then
-                    IR.coinsOnProc = player:GetNumCoins()
-                    Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, CoinSubType.COIN_PENNY, player.Position, Vector(0,0), nil)
-                end
-                if player:GetNumCoins() % 7 == 0 and player:GetNumCoins() > 0 and player:HasCollectible(CollectibleType.COLLECTIBLE_STEAM_SALE) then
-                    IR.coinsOnProc = player:GetNumCoins()
-                    Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, CoinSubType.COIN_PENNY, player.Position, Vector(0,0), nil)
-                end
-            end
-            if player.Luck ~= IR.savedLuck then
-                IR.savedLuck = player.Luck
-                player:AddCacheFlags(CacheFlag.CACHE_SPEED)
-                player:EvaluateItems()
-            end
-        end
-        -------------------
-        -- Little Steven --
-        -------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_LITTLE_STEVEN) and IR.Config["doLittleSteven"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                if entity.SpawnerVariant == FamiliarVariant.LITTLE_STEVEN and entity.FrameCount < 1 then
-                    local tear = entity:ToTear()
-                    tear.CollisionDamage = math.max((player.Damage/2),5)
-                    if player:HasTrinket(TrinketType.TRINKET_BABY_BENDER) then
-                        tear.CollisionDamage = entity.CollisionDamage * 3
-                        tear.Scale = tear.Scale * 1.3
-                    end
-                end
-            end
-        end
-        --------------------
-        -- Harlequin Baby --
-        --------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_HARLEQUIN_BABY) and IR.Config["doHarlequinBaby"] then
-            for _, entity in ipairs(IR.EntityList.Tears) do
-                if entity.SpawnerVariant == FamiliarVariant.HARLEQUIN_BABY and entity.FrameCount < 1 then
-                    local tear = entity:ToTear()
-                    tear.CollisionDamage = math.max((player.Damage/2),4)
-                end
-            end
-        end
-        -------------
-        -- Poke-Go --
-        -------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_POKE_GO) and IR.Config["doPokeGo"] then
-            for _, entity in ipairs(IR.EntityList.Enemies) do
-                if entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) and entity:GetData().initPokeGo == nil then
-                    if math.random(5) == 1 then
-                        entity:ToNPC():MakeChampion(math.random(10000))
-                    end
-                    entity:GetData().initPokeGo = true
-                end
-            end
-        end
-    end
-end
-
-IR:AddCallback(ModCallbacks.MC_POST_UPDATE, IR.onUpdate)
-
------------------------------
--- Replacing Vanilla Items --
------------------------------
-function IR:onMorph(_, variant, subtype)
-    if variant == PickupVariant.PICKUP_COLLECTIBLE and subtype == CollectibleType.COLLECTIBLE_HALLOWED_GROUND and IR.Config["doHallowedGround"] then
-        return {PickupVariant.PICKUP_COLLECTIBLE, IR.hallowedground.Item}
-    elseif variant == PickupVariant.PICKUP_COLLECTIBLE and subtype == CollectibleType.COLLECTIBLE_MONSTER_MANUAL and IR.Config["doMonsterManual"] then
-        return {PickupVariant.PICKUP_COLLECTIBLE, IR.monstermanual.Item}
-    end
-end
-
-IR:AddCallback(ModCallbacks.MC_POST_PICKUP_SELECTION, IR.onMorph)
-
------------------------------------------------------------------
--- Credit to Strawrat @ https://steamcommunity.com/id/Strawrat --
------------------------------------------------------------------
-function IR:onFamiliar(entity)
-    for playerNum = 1, Game():GetNumPlayers() do
-        local player = Game():GetPlayer(playerNum - 1)
-        ------------------
-        -- Farting Baby --
-        ------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_FARTING_BABY) and IR.Config["doFartingBaby"] then
-            if entity:GetSprite():IsPlaying("Hit") then
-                for _, enemy in ipairs(IR.EntityList.Enemies) do
-                    enemy:AddPoison(EntityRef(entity), 450, (player.Damage * 2))
-                end
-            end
-        end
-        ---------------
-        -- King Baby --
-        ---------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_KING_BABY) and entity.Variant ~= FamiliarVariant.KING_BABY and IR.Config["doKingBaby"] then
-            local target = (Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FamiliarVariant.KING_BABY, -1, false, false))[1]
-            local data = entity:GetData()
-            if entity.IsFollower and entity.Variant ~= FamiliarVariant.KEY_FULL and entity.Variant ~= FamiliarVariant.KEY_PIECE_1 and entity.Variant ~= FamiliarVariant.KEY_PIECE_2 and entity.Variant ~= FamiliarVariant.ISAACS_HEART and entity.Variant ~= FamiliarVariant.ONE_UP and target ~= nil then
-                if data.OrbitIndex == nil then
-                    data.OrbitIndex = 0
-                end
-                if entity.OrbitLayer ~= IR.kingbaby.orbitLayerOne and data.OrbitIndex <= IR.kingbaby.orbitOne then
-                    data.WasOrbital = true
-                    data.OriginalLayer = entity.OrbitLayer
-                    entity:AddToOrbit(IR.kingbaby.orbitLayerOne)
-                elseif entity.OrbitLayer ~= IR.kingbaby.orbitLayerTwo and data.OrbitIndex > IR.kingbaby.orbitOne then
-                    data.WasOrbital = true
-                    data.OriginalLayer = entity.OrbitLayer
-                    entity:AddToOrbit(IR.kingbaby.orbitLayerTwo)
-                end
-                local nextOrbit = IR.kingbaby.orbitDistanceOne
-                if data.OrbitIndex > IR.kingbaby.orbitOne then
-                    nextOrbit = IR.kingbaby.orbitDistanceTwo
-                end
-                entity.OrbitDistance = nextOrbit
-                entity.OrbitSpeed = IR.kingbaby.orbitSpeed 
-                local orbitPos = entity:GetOrbitPosition(target.Position + target.Velocity) 
-                local chargers = entity.Variant == FamiliarVariant.LITTLE_CHUBBY or entity.Variant == FamiliarVariant.BOBS_BRAIN or entity.Variant == FamiliarVariant.BIG_CHUBBY
-                if not chargers or (chargers and entity.FireCooldown >= 0) then
-                    entity.Velocity = (orbitPos - entity.Position) / IR.kingbaby.orbitVelocity
-                end
-            elseif data.WasOrbital then
-                data.WasOrbital = nil
-                if data.OriginalLayer == -1 then
-                    entity:RemoveFromOrbit()
-                else
-                    entity:AddToOrbit(data.OriginalLayer)
-                end
-                data.OriginalLayer = nil
-            end
-        end
-    end
-end
-
-IR:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, IR.onFamiliar)
-
-----------------------
--- Dead Sea Scrolls --
-----------------------
-function IR:onDSS()
-    if IR.Config["doDeadSeaScrolls"] then
-        local player = GetPlayerUsingActive(CollectibleType.COLLECTIBLE_DEAD_SEA_SCROLLS)
-        SFXManager():Play(SoundEffect.SOUND_BOSS_LITE_HISS, 1.0, 0, false, 1.0)
-        player:UseActiveItem(IR.DeadSeaScrolls[math.random(#IR.DeadSeaScrolls)], false, false, false, false)
-        return true
-    end
-end
-
-IR:AddCallback(ModCallbacks.MC_PRE_USE_ITEM, IR.onDSS, CollectibleType.COLLECTIBLE_DEAD_SEA_SCROLLS)
-
---------------
--- Scissors --
---------------
-function IR:onScissors()
-    if IR.Config["doScissors"] then
-        local player = GetPlayerUsingActive(CollectibleType.COLLECTIBLE_SCISSORS)
-        local Pool = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_RED, 0, player.Position, Vector(0,0), player):ToEffect()
-        Pool.CollisionDamage = player.Damage / 4
-        Pool:SetColor(Color(0.0,0.0,0.0,0.0,0,0,0),0,0,false,false)
-        Pool:SetTimeout(99999)
-        Pool.Scale = 2
-        local FakePool = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_RED, 0, player.Position, Vector(0,0), player):ToEffect()
-        FakePool.CollisionDamage = 0
-        FakePool:SetTimeout(99999)
-        FakePool.Scale = 4
-    end
-end
-
-IR:AddCallback(ModCallbacks.MC_USE_ITEM, IR.onScissors, CollectibleType.COLLECTIBLE_SCISSORS)
-
----------------
--- Yum Heart --
----------------
-function IR:onYumHeart()
-    if IR.Config["doYumHeart"] then
-        local void = false
-        local player = GetPlayerUsingActive(CollectibleType.COLLECTIBLE_YUM_HEART)
-        if player == nil then
-            player = GetPlayerUsingActive(IR.yumheart.Soul)
-        end
-        if player == nil then
-            player = GetPlayerUsingActive(IR.yumheart.Black)
-        end
-        if player == nil then
-            player = GetPlayerUsingActive(IR.yumheart.Eternal)
-        end
-        if player == nil then
-            player = GetPlayerUsingActive(IR.yumheart.OneUp)
-        end
-        if player:GetPlayerType() == PlayerType.PLAYER_KEEPER then
-            local coinPos = findFreeTile(player.Position)
-            if coinPos == false then
-                coinPos = player.Position
-            else
-                coinPos = Game():GetRoom():GetGridPosition(coinPos)
-            end
-            SFXManager():Play(SoundEffect.SOUND_VAMP_GULP, 1.0, 0, false, 1.0)
-            Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, CoinSubType.COIN_PENNY, coinPos, Vector(0,0), nil)
-            return
-        end
-        if player:GetPlayerType() == PlayerType.PLAYER_THELOST then
-            SFXManager():Play(SoundEffect.SOUND_VAMP_GULP, 1.0, 0, false, 1.0)
-            player:RemoveCollectible(CollectibleType.COLLECTIBLE_HOLY_MANTLE)
+        --------------------------
+        -- The Lost Holy Mantle --
+        --------------------------
+        if player:GetPlayerType() == PlayerType.PLAYER_THELOST and not player:HasCollectible(CollectibleType.COLLECTIBLE_HOLY_MANTLE) and player:GetActiveCharge() == 0 and ISR.Config["doLostHolyMantle"] then
             player:AddCollectible(CollectibleType.COLLECTIBLE_HOLY_MANTLE, 0, false)
-            return
         end
-        if player:GetActiveItem() == CollectibleType.COLLECTIBLE_VOID then
-            void = true
+        if player:GetPlayerType() == PlayerType.PLAYER_THELOST and not player:HasCollectible(CollectibleType.COLLECTIBLE_HOLY_MANTLE) and player:GetActiveItem() == 0 and ISR.Config["doLostHolyMantle"] then
+            player:AddCollectible(CollectibleType.COLLECTIBLE_HOLY_MANTLE, 0, false)
         end
-        if player:CanPickRedHearts() then
-            if void == true then
-                SFXManager():Play(SoundEffect.SOUND_VAMP_GULP, 1.0, 0, false, 1.0)
-                player:AddHearts(2)
-            end
-            return
-        elseif player:CanPickSoulHearts() then
-            SFXManager():Play(SoundEffect.SOUND_VAMP_GULP, 1.0, 0, false, 1.0)
-            player:AddCollectible(IR.yumheart.Soul, 0, false)
-            if void == true then
-                player:RemoveCollectible(IR.yumheart.OneUp)
-                player:RemoveCollectible(IR.yumheart.Eternal)
-                player:RemoveCollectible(IR.yumheart.Black)
-                player:RemoveCollectible(IR.yumheart.Soul)
-                player:RemoveCollectible(CollectibleType.COLLECTIBLE_YUM_HEART)
-                player:AddCollectible(CollectibleType.COLLECTIBLE_VOID, 0, false)
-            end
-            player:AddSoulHearts(1)
-            return
-        elseif player:CanPickBlackHearts() then
-            SFXManager():Play(SoundEffect.SOUND_VAMP_GULP, 1.0, 0, false, 1.0)
-            player:AddCollectible(IR.yumheart.Soul, 0, false)
-            if void == true then
-                player:RemoveCollectible(IR.yumheart.OneUp)
-                player:RemoveCollectible(IR.yumheart.Eternal)
-                player:RemoveCollectible(IR.yumheart.Black)
-                player:RemoveCollectible(IR.yumheart.Soul)
-                player:RemoveCollectible(CollectibleType.COLLECTIBLE_YUM_HEART)
-                player:AddCollectible(CollectibleType.COLLECTIBLE_VOID, 0, false)
-            end
-            player:AddBlackHearts(1)
-            return
-        elseif player:GetHearts() < 24 then
-            SFXManager():Play(SoundEffect.SOUND_VAMP_GULP, 1.0, 0, false, 1.0)
-            player:AddCollectible(IR.yumheart.Soul, 0, false)
-            if void == true then
-                player:RemoveCollectible(IR.yumheart.OneUp)
-                player:RemoveCollectible(IR.yumheart.Eternal)
-                player:RemoveCollectible(IR.yumheart.Black)
-                player:RemoveCollectible(IR.yumheart.Soul)
-                player:RemoveCollectible(CollectibleType.COLLECTIBLE_YUM_HEART)
-                player:AddCollectible(CollectibleType.COLLECTIBLE_VOID, 0, false)
-            end
-            player:AddEternalHearts(1)
-            return
-        else
-            SFXManager():Play(SoundEffect.SOUND_CHOIR_UNLOCK, 1.0, 0, false, 1.0)
-            player:AddCollectible(IR.yumheart.Soul, 0, false)
-            player:AddMaxHearts(-18)
-            player:AddCollectible(CollectibleType.COLLECTIBLE_ONE_UP, 0, false)
-            player:RemoveCollectible(IR.yumheart.OneUp)
-            player:RemoveCollectible(IR.yumheart.Eternal)
-            player:RemoveCollectible(IR.yumheart.Black)
-            player:RemoveCollectible(IR.yumheart.Soul)
-            player:RemoveCollectible(CollectibleType.COLLECTIBLE_YUM_HEART)
-            if void == true then
-                player:RemoveCollectible(IR.yumheart.OneUp)
-                player:RemoveCollectible(IR.yumheart.Eternal)
-                player:RemoveCollectible(IR.yumheart.Black)
-                player:RemoveCollectible(IR.yumheart.Soul)
-                player:RemoveCollectible(CollectibleType.COLLECTIBLE_YUM_HEART)
-                player:AddCollectible(CollectibleType.COLLECTIBLE_VOID, 0, false)
-            end
-            return
-        end
-    end
-end
-
-IR:AddCallback(ModCallbacks.MC_PRE_USE_ITEM, IR.onYumHeart, CollectibleType.COLLECTIBLE_YUM_HEART)
-IR:AddCallback(ModCallbacks.MC_PRE_USE_ITEM, IR.onYumHeart, IR.yumheart.Soul)
-IR:AddCallback(ModCallbacks.MC_PRE_USE_ITEM, IR.onYumHeart, IR.yumheart.Black)
-IR:AddCallback(ModCallbacks.MC_PRE_USE_ITEM, IR.onYumHeart, IR.yumheart.Eternal)
-IR:AddCallback(ModCallbacks.MC_PRE_USE_ITEM, IR.onYumHeart, IR.yumheart.OneUp)
-
-
------------------
--- Spider Butt --
------------------
-function IR:onSpiderButt()
-    if IR.Config["doSpiderButt"] then
-        local player = GetPlayerUsingActive(CollectibleType.COLLECTIBLE_SPIDER_BUTT)
-        for _, entity in ipairs(IR.EntityList.Enemies) do
-            if entity:IsVulnerableEnemy() then
-                entity:TakeDamage(player.Damage/2, 0, EntityRef(player), 0)
-            end
-        end
-    end
-end
-
-IR:AddCallback(ModCallbacks.MC_USE_ITEM, IR.onSpiderButt, CollectibleType.COLLECTIBLE_SPIDER_BUTT)
-
-function IR:onRoom()
-    IR.ActiveItemLimit = false
-    local room = Game():GetRoom()
-    local level = Game():GetLevel()
-    for playerNum = 1, Game():GetNumPlayers() do
-        local player = Game():GetPlayer(playerNum - 1)
-        ----------------------
-        -- Guppy's Hairball --
-        ----------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_GUPPYS_HAIRBALL) and Game():GetLevel():GetCurrentRoomDesc().VisitedCount == 1 and IR.Config["doGuppyHairball"] then
-            local num = Game():GetLevel():GetCurrentRoom():GetAliveEnemiesCount()
-            if num > 0 then
-                player:AddBlueFlies(math.random(math.ceil(num/2),num), player.Position, player)
-            end
-        end
-        ----------------
-        -- The Peeper --
-        ----------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_PEEPER) and IR.Config["doPeeper"] then
-            while IR.hasPeeper == true do
-                IR.hasPeeper = false
-                player:RemoveCollectible(CollectibleType.COLLECTIBLE_PEEPER)
-            end
-        end
-        ------------------
-        -- Magic 8 Ball --
-        ------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_MAGIC_8_BALL) and IR.Config["doMagicEightBall"] and room:IsFirstVisit() and level:GetCurrentRoomIndex() == level:GetStartingRoomIndex() then
-            Isaac.Spawn(EntityType.ENTITY_SLOT, 3, 0, Vector(180,165), Vector(0,0), nil)
-        end
-    end
-end
-
-IR:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, IR.onRoom)
-
-function IR:onDamage(entity, amt, flag, source, countdown)
-    for playerNum = 1, Game():GetNumPlayers() do
-        local player = Game():GetPlayer(playerNum - 1)
-        ----------------
-        -- Holy Water --
-        ----------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_HOLY_WATER) or IR.monstermanual.MMholywater == true and IR.Config["doHolyWater"] then
-            if source.Type == EntityType.ENTITY_TEAR and source.Entity.SpawnerType == EntityType.ENTITY_PLAYER then
-                local Pool = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL, 0, source.Position, Vector(0,0), player):ToEffect()
-                Pool.CollisionDamage = player.Damage / 4
-                Pool:SetColor(Color(1.0,1.0,1.0,0,0,0,0),0,0,false,false)
-                Pool.Scale = 2
-            end
-        end
-        --------------------
-        -- Missing Page 2 --
-        --------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_MISSING_PAGE_2) and entity.Type == EntityType.ENTITY_PLAYER and IR.Config["doMissingPage"] then
-            for _, entity in ipairs(IR.EntityList.Enemies) do
-                if entity:IsVulnerableEnemy() then
-                    entity:TakeDamage(5.0, 0, EntityRef(player), 0)
-                end
-            end
-        end
-        ----------------
-        -- Dead Tooth --
-        ----------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_DEAD_TOOTH) and entity:IsVulnerableEnemy() and entity:HasEntityFlags(EntityFlag.FLAG_POISON) and IR.Config["doDeadTooth"] then
-            for _, target in pairs(Isaac.FindInRadius(player.Position, 50, EntityPartition.ENEMY)) do
-                target:AddEntityFlags(EntityFlag.FLAG_SPAWN_BLACK_HP)
-            end
-        end
-        ----------------
-        -- The Peeper --
-        ----------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_PEEPER) and entity.Type == EntityType.ENTITY_PLAYER and IR.Config["doPeeper"] then
-            if IR.hasPeeper == false then
-                IR.hasPeeper = true
-                player:AddCollectible(CollectibleType.COLLECTIBLE_PEEPER, 0, false)
-            end
-        end
-        ------------------
-        -- Magic 8 Ball --
-        ------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_MAGIC_8_BALL) and entity.Type == EntityType.ENTITY_PLAYER and IR.Config["doMagicEightBall"] then
-            if math.random(10) == 1 then
-                player:UseActiveItem(CollectibleType.COLLECTIBLE_CRYSTAL_BALL, false, false, true, false)
-            end
-        end
-        ----------------
-        -- Black Bean --
-        ----------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_BLACK_BEAN) and source.Type == EntityType.ENTITY_TEAR and source.Entity.SpawnerType == EntityType.ENTITY_PLAYER and IR.Config["doBlackBean"] then
-            if math.random(4) == 1 then
-                local fart = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.FART, 0, entity.Position, Vector(0,0), player)
-                for _, target in ipairs(Isaac.FindInRadius(fart.Position, 150, EntityPartition.ENEMY)) do
-                    target:TakeDamage(player.Damage/5, 0, EntityRef(player), 0)
-                end
-            end
-        end
-        --------------
-        -- Betrayal --
-        --------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_BETRAYAL) and IR.Config["doBetrayal"] then
-            if entity:GetData().initBetrayal == nil and entity:HasEntityFlags(EntityFlag.FLAG_CHARM) and not entity:HasEntityFlags(EntityFlag.FLAG_PERSISTENT) then
-                entity:GetData().initBetrayal = true
-                entity:TakeDamage((4 * amt), 0, EntityRef(nil), 0)
-                return false
-            elseif entity:GetData().initBetrayal == true and entity:HasEntityFlags(EntityFlag.FLAG_CHARM) and not entity:HasEntityFlags(EntityFlag.FLAG_PERSISTENT) then
-                entity:GetData().initBetrayal = nil
-                return true
-            end
-        end
-        --------------------
-        -- Shard of Glass --
-        --------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_SHARD_OF_GLASS) and entity.Type == EntityType.ENTITY_PLAYER and IR.Config["doShard"] then
-            for _, target in ipairs(IR.EntityList.Enemies) do
-                if source.Entity ~= nil then
-                    if target.Index == source.Entity.Index then
-                        target:TakeDamage(5.0, 0, EntityRef(player), 0)
-                        target:AddEntityFlags(EntityFlag.FLAG_BLEED_OUT)
+        -------------------
+        -- Tinted Ground --
+        -------------------
+        if ISR.TintedGround.checkForDigging and ISR.Config["doTintedGround"] then
+            for _, bomb in ipairs(ISR.EntityList.Bombs) do
+                if bomb.Position:Distance(Vector(ISR.TintedGround.MGX,ISR.TintedGround.MGY)) < 90 then
+                    for i, key in ipairs(ISR.TintedGround.currentFloorMG) do
+                        if key.RoomIndex == ISR.TintedGround.currentRoomMG then
+                            for _, entity in ipairs(Isaac.FindByType(ISR.TintedGround.markedGround.Type, ISR.TintedGround.markedGround.Variant, ISR.TintedGround.markedGround.SubType0, false, false)) do
+                                entity:Remove()
+                            end
+                            local dugGround = Isaac.Spawn(ISR.TintedGround.markedGround.Type, ISR.TintedGround.markedGround.Variant, ISR.TintedGround.markedGround.SubType1, Vector(ISR.TintedGround.MGX,ISR.TintedGround.MGY), Vector(0,0), ISR.TintedGround.markedGround.Spawner)
+                            dugGround.CollisionDamage = 0
+                            dugGround:ToEffect():SetTimeout(999999999)
+                            local savedata = {
+                                X = 0,
+                                Y = 0,
+                                RoomIndex = 0,
+                            }
+                            savedata.X = ISR.TintedGround.MGX
+                            savedata.Y = ISR.TintedGround.MGY
+                            savedata.RoomIndex = ISR.TintedGround.currentRoomMG
+                            table.remove(ISR.TintedGround.currentFloorMG, i)
+                            table.insert(ISR.TintedGround.currentFloorDG, savedata)
+                            Isaac.GridSpawn(GridEntityType.GRID_STAIRS, 0, Vector(ISR.TintedGround.MGX,ISR.TintedGround.MGY), true)
+                            ISR.TintedGround.hasDug = true
+                            ISR.TintedGround.checkForDigging = false
+                        end
                     end
                 end
             end
@@ -1200,313 +550,226 @@ function IR:onDamage(entity, amt, flag, source, countdown)
     end
 end
 
-IR:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, IR.onDamage)
+ISR:AddCallback(ModCallbacks.MC_POST_UPDATE, ISR.onUpdate)
 
----------------
--- Hourglass --
----------------
-function IR:onHourglass()
-    if IR.Config["doHourglass"] then
-        IR.ActiveItemRoom = Game():GetLevel():GetCurrentRoomIndex()
-        IR.ActiveItemTimer = 1600
-    end
-end
-
-IR:AddCallback(ModCallbacks.MC_USE_ITEM, IR.onHourglass, CollectibleType.COLLECTIBLE_HOURGLASS)
-
---------------
--- Kamikaze --
---------------
-function IR:onKamikaze()
-    local player = GetPlayerUsingActive(CollectibleType.COLLECTIBLE_KAMIKAZE)
-    if IR.Config["doKamikaze"] and player:HasCollectible(CollectibleType.COLLECTIBLE_KAMIKAZE) then
-        local kamikaze = player:FireBomb(player.Position, player.Velocity)
-        kamikaze:ToBomb():SetExplosionCountdown(0)
-    end
-    return true
-end
-
-IR:AddCallback(ModCallbacks.MC_PRE_USE_ITEM, IR.onKamikaze, CollectibleType.COLLECTIBLE_KAMIKAZE)
-
----------------
--- Mom's Pad --
----------------
-function IR:onMomsPad()
-    if IR.Config["doMomsPad"] then
-        IR.ActiveItemRoom = Game():GetLevel():GetCurrentRoomIndex()
-        IR.ActiveItemTimer = 1600
-    end
-end
-
-IR:AddCallback(ModCallbacks.MC_USE_ITEM, IR.onMomsPad, CollectibleType.COLLECTIBLE_MOMS_PAD)
-
----------------
--- Mom's Bra --
----------------
-function IR:onMomsBra()
-    if IR.Config["doMomsBra"] then
-        IR.ActiveItemRoom = Game():GetLevel():GetCurrentRoomIndex()
-        IR.ActiveItemTimer = 1600
-    end
-end
-
-IR:AddCallback(ModCallbacks.MC_USE_ITEM, IR.onMomsBra, CollectibleType.COLLECTIBLE_MOMS_BRA)
-
----------------------
--- Hallowed Ground --
----------------------
-function IR:onHallowed()
-    if IR.Config["doHallowedGround"] then
-        SFXManager():Play(SoundEffect.SOUND_FART, 1.0, 0, false, 1.0)
-        local player = GetPlayerUsingActive(IR.hallowedground.Item)
-        local room = Game():GetRoom()
-        local pos = findFreeTile(player.Position)
-        if pos ~= false then
-            room:SpawnGridEntity(pos, GridEntityType.GRID_POOP, 6, 0, 0)
+-----------------
+-- Troll Bombs --
+-----------------
+function ISR:onBombInit(bomb)
+    if ISR.Config["doTrollTimer"] then
+        if bomb.Variant == BombVariant.BOMB_TROLL or bomb.Variant == BombVariant.BOMB_SUPERTROLL then
+            bomb:SetExplosionCountdown(60)
         end
     end
 end
 
-IR:AddCallback(ModCallbacks.MC_USE_ITEM, IR.onHallowed, IR.hallowedground.Item)
+ISR:AddCallback(ModCallbacks.MC_POST_BOMB_INIT, ISR.onBombInit)
 
---------------
--- The Poop --
---------------
-function IR:onPoop()
-    if IR.Config["doPoop"] then
-        local player = GetPlayerUsingActive(CollectibleType.COLLECTIBLE_POOP)
-        local Pool = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_LEMON_MISHAP, 0, player.Position, Vector(0,0), player):ToEffect()
-        Pool.CollisionDamage = player.Damage / 3
-        Pool:SetColor(Color(0.0,0.0,0.0,1.0,160,82,45),0,0,false,false)
-        Pool.Scale = 2
+--------------------------
+-- The Lost Holy Mantle --
+--------------------------
+function ISR:lostHolyMantle()
+    local player = GetPlayerUsingActive(CollectibleType.COLLECTIBLE_D4)
+    if player == nil then
+        player = GetPlayerUsingActive(CollectibleType.COLLECTIBLE_D100)
+    end
+    if player == nil then
+        player = GetPlayerUsingActive(CollectibleType.COLLECTIBLE_DINF)
+    end
+    if player:GetPlayerType() == PlayerType.PLAYER_THELOST and player:HasCollectible(CollectibleType.COLLECTIBLE_HOLY_MANTLE) and ISR.Config["doLostHolyMantle"] then
+        player:RemoveCollectible(CollectibleType.COLLECTIBLE_HOLY_MANTLE)
     end
 end
 
-IR:AddCallback(ModCallbacks.MC_USE_ITEM, IR.onPoop, CollectibleType.COLLECTIBLE_POOP)
+ISR:AddCallback(ModCallbacks.MC_PRE_USE_ITEM, ISR.lostHolyMantle, CollectibleType.COLLECTIBLE_D4)
+ISR:AddCallback(ModCallbacks.MC_PRE_USE_ITEM, ISR.lostHolyMantle, CollectibleType.COLLECTIBLE_D100)
+ISR:AddCallback(ModCallbacks.MC_PRE_USE_ITEM, ISR.lostHolyMantle, CollectibleType.COLLECTIBLE_DINF)
 
-function IR:onNewLevel()
-    for playerNum = 1, Game():GetNumPlayers() do
-        local player = Game():GetPlayer(playerNum - 1)
+function ISR:chestInit(chest)
+    for playerNum = 1, Game:GetNumPlayers() do
+        local player = Game:GetPlayer(playerNum - 1)
         --------------------
-        -- Monster Manual --
+        -- The Right Hand --
         --------------------
-        if IR.Config["doMonsterManual"] then
-            IR.monstermanual.fList = {}
-            IR.monstermanual.MMholywater = false
-            player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS)
-            player:EvaluateItems()
+        if player:HasTrinket(TrinketType.TRINKET_RIGHT_HAND) and ISR.Config["doRightHand"] then
+            chest:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_ETERNALCHEST, -1, true)
         end
     end
 end
 
-IR:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, IR.onNewLevel)
+ISR:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, ISR.chestInit, PickupVariant.PICKUP_CHEST)
+ISR:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, ISR.chestInit, PickupVariant.PICKUP_BOMBCHEST)
+ISR:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, ISR.chestInit, PickupVariant.PICKUP_SPIKEDCHEST)
+ISR:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, ISR.chestInit, PickupVariant.PICKUP_MIMICCHEST)
+ISR:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, ISR.chestInit, PickupVariant.PICKUP_LOCKEDCHEST)
+ISR:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, ISR.chestInit, PickupVariant.PICKUP_REDCHEST)
 
-------------
--- Plan C --
-------------
-function IR:onPlanC()
-    if IR.Config["doPlanC"] then
-        IR.planc.usedPlanC = true
-    end
-end
-
-IR:AddCallback(ModCallbacks.MC_USE_ITEM, IR.onPlanC, CollectibleType.COLLECTIBLE_PLAN_C)
-
---------------------
--- Monster Manual --
---------------------
-function IR:onMonsterMan()
-    if IR.Config["doMonsterManual"] then
-        local player = GetPlayerUsingActive(IR.monstermanual.Item)
-        SFXManager():Play(SoundEffect.SOUND_SATAN_GROW, 1.0, 0, false, 1.0)
-        IR.monstermanual.fRoll = math.random(#IR.monstermanual.fVariant)
-        if #IR.monstermanual.fList > IR.Config["MonsterManualLimit"] then
-            table.insert(IR.monstermanual.fList, 1, IR.monstermanual.fVariant[IR.monstermanual.fRoll])
-            table.remove(IR.monstermanual.fList, #IR.monstermanual.fList)
-        else
-            table.insert(IR.monstermanual.fList, IR.monstermanual.fVariant[IR.monstermanual.fRoll])
-        end
-        player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS)
-        player:EvaluateItems()
-    end
-end
-
-IR:AddCallback(ModCallbacks.MC_USE_ITEM, IR.onMonsterMan, IR.monstermanual.Item)
-
-function IR:onPill()
-    for playerNum = 1, Game():GetNumPlayers() do
-        local player = Game():GetPlayer(playerNum - 1)
-        ------------------
-        -- Little Baggy --
-        ------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_LITTLE_BAGGY) and IR.Config["doLittleBaggy"] then
-            player:AddSoulHearts(1)
+function ISR:onPill(pill)
+    for playerNum = 1, Game:GetNumPlayers() do
+        local player = Game:GetPlayer(playerNum - 1)
+        local itemPool = Game:GetItemPool()
+        if pill == PillEffect.PILLEFFECT_I_FOUND_PILLS and pill == itemPool:GetPillEffect(player:GetPill(0)) and ISR.Config["doFoundPills"] then
+            local randomPill
+            repeat
+                randomPill = math.random(0, 46)
+            until randomPill ~= 8
+            player:UsePill(randomPill, PillColor.PILL_NULL)
         end
     end
 end
 
-IR:AddCallback(ModCallbacks.MC_USE_PILL, IR.onPill)
+ISR:AddCallback(ModCallbacks.MC_USE_PILL, ISR.onPill)
 
----------------
--- Dataminer --
----------------
-function IR:onDataminer()
-    if IR.Config["doDataminer"] then
-        local player = GetPlayerUsingActive(CollectibleType.COLLECTIBLE_DATAMINER)
-        local roll = math.random(100)
-        if roll > 0 and roll < 51 then
-            player:AddCollectible(CollectibleType.COLLECTIBLE_GB_BUG, 0, false)
-        elseif roll > 50 and roll < 76 then
-            IR.dataminer.DMroom = Game():GetLevel():GetCurrentRoomIndex()
-            IR.dataminer.hasModem = false
-            IR.dataminer.hadModem = false
-            IR.dataminer.usedDM = true
-        elseif roll > 75 and roll < 96 then
-            for i = 1, 10 do
-                Isaac.Spawn(EntityType.ENTITY_SHOPKEEPER, 2, 0, Vector(math.random(90,1060),math.random(170,820)), Vector(0,0), nil)
-            end
-            Isaac.ExecuteCommand("spawn 5.100.258")
-        elseif roll > 95 and roll < 101 then
-            Isaac.ExecuteCommand("goto s.error.#")
-            player:RemoveCollectible(CollectibleType.COLLECTIBLE_DATAMINER)
-        end
+----------------------------
+-- Replacing Modded Items --
+----------------------------
+function ISR:onMorph(_, variant, subtype)
+    if variant == PickupVariant.PICKUP_TRINKET and subtype == TrinketType.TRINKET_FF_RIGHT_HAND and ISR.Config["doRightHand"] then
+        return {PickupVariant.PICKUP_TRINKET, TrinketType.TRINKET_RIGHT_HAND}
     end
 end
 
-IR:AddCallback(ModCallbacks.MC_USE_ITEM, IR.onDataminer, CollectibleType.COLLECTIBLE_DATAMINER)
+ISR:AddCallback(ModCallbacks.MC_POST_PICKUP_SELECTION, ISR.onMorph)
 
-function IR:onCache(player, flag)
-    ------------------
-    -- Technology 2 --
-    ------------------
-    if player:HasCollectible(CollectibleType.COLLECTIBLE_TECHNOLOGY_2) and IR.Config["doTechTwo"] then
-        if flag == CacheFlag.CACHE_DAMAGE then
-            player.Damage = player.Damage * 1.54
-        end
+-------------------
+-- Tinted Ground --
+-------------------
+function ISR:onBombCrater(Effect)
+    if ISR.TintedGround.checkForDigging and ISR.Config["doTintedGround"] then
+        Effect:Remove()
     end
-    ---------------
-    -- Trisagion --
-    ---------------
-    if player:HasCollectible(CollectibleType.COLLECTIBLE_TRISAGION) and IR.Config["doTrisagion"] then
-        if flag == CacheFlag.CACHE_DAMAGE then
-            player.Damage = player.Damage * 1.33
-        end
-    end
-    ----------------
-    -- Cursed Eye --
-    ----------------
-    if player:HasCollectible(CollectibleType.COLLECTIBLE_CURSED_EYE) and IR.Config["doCursedEye"] then
-        if flag == CacheFlag.CACHE_DAMAGE then
-            player.Damage = player.Damage + 1
-        end
-    end
-    ----------------
-    -- Lucky Foot --
-    ----------------
-    if player:HasCollectible(CollectibleType.COLLECTIBLE_LUCKY_FOOT) and IR.Config["doLuckyFoot"] then
-        if flag == CacheFlag.CACHE_SPEED then
-            player.MoveSpeed = player.MoveSpeed + ((0.1 * player.Luck)/2)
-        end
-    end
-    -----------------
-    -- Tiny Planet --
-    -----------------
-    if player:HasCollectible(CollectibleType.COLLECTIBLE_TINY_PLANET) and IR.Config["doTinyPlanet"] then
-        if flag == CacheFlag.CACHE_FIREDELAY then
-            player.MaxFireDelay = player.MaxFireDelay - 1
-        elseif flag == CacheFlag.CACHE_RANGE then
-            player.TearHeight = player.TearHeight - 32.25
-        elseif flag == CacheFlag.CACHE_SHOTSPEED then
-            player.ShotSpeed = player.ShotSpeed - 0.15
-        elseif flag == CacheFlag.CACHE_TEARFLAG then
-            player.TearFlags = player.TearFlags | 1 
-        end
-    end
-    if flag == CacheFlag.CACHE_FAMILIARS then
-        --------------------
-        -- Monster Manual --
-        --------------------
-        if IR.Config["doMonsterManual"] then
-            for _, data in ipairs(IR.monstermanual.fList) do
-                IR.monstermanual.fNum = Isaac.CountEntities(player, EntityType.ENTITY_FAMILIAR, data, -1) + 1
-                player:CheckFamiliar(data, IR.monstermanual.fNum, IR.monstermanual.famRNG)
-                if data == 25 and IR.monstermanual.fNum > 0 then
-                    IR.monstermanual.MMholywater = true
+end
+
+ISR:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, ISR.onBombCrater, EffectVariant.BOMB_CRATER)
+
+function ISR:onRoom()
+    local roomindex = Game:GetLevel():GetCurrentRoomIndex()
+    local room = Game:GetRoom()
+    -------------------
+    -- Tinted Ground --
+    -------------------
+    if ISR.Config["doTintedGround"] then
+        if room:GetType() == RoomType.ROOM_DUNGEON and ISR.TintedGround.hasDug == true then
+            if math.random(10) < 3 then
+                for i=1, room:GetGridSize() do
+                    local GridEntity = room:GetGridEntity(i)
+                    if GridEntity and (i == 57) then
+                        GridEntity:SetType(GridEntityType.GRID_GRAVITY)                  
+                    elseif GridEntity and (i == 58) then
+                        GridEntity:SetType(GridEntityType.GRID_GRAVITY)
+                    elseif GridEntity and (i == 59) then
+                        GridEntity:SetType(GridEntityType.GRID_WALL)
+                    elseif GridEntity and (i == 72) then
+                        GridEntity:SetType(GridEntityType.GRID_GRAVITY)
+                    elseif GridEntity and (i == 73) then
+                        GridEntity:SetType(GridEntityType.GRID_GRAVITY)
+                    elseif GridEntity and (i == 74) then
+                        GridEntity:SetType(GridEntityType.GRID_WALL)
+                    elseif GridEntity and (i == 102) then
+                        GridEntity:SetType(GridEntityType.GRID_WALL)
+                    elseif GridEntity and (i == 117) then
+                        GridEntity:SetType(GridEntityType.GRID_WALL)
+                    elseif GridEntity and (i == 88) then
+                        GridEntity:SetType(GridEntityType.GRID_GRAVITY)
+                    elseif GridEntity and (i == 103) then
+                        GridEntity:SetType(GridEntityType.GRID_GRAVITY)
+                    elseif GridEntity and (i == 118) then
+                        GridEntity:SetType(GridEntityType.GRID_GRAVITY)
+                    elseif GridEntity and (i == 119) then
+                        GridEntity:SetType(GridEntityType.GRID_GRAVITY)
+                    end
+                end
+                if room:IsFirstVisit() then
+                    Game:GetLevel():ChangeRoom(roomindex)
                 end
             end
         end
-        ---------------
-        -- King Baby --
-        ---------------
-        if IR.Config["doKingBaby"] then
-            IR.kingbaby.proccessFamiliars = true
-        end
-    end
-    -----------------------
-    -- Strange Attractor --
-    -----------------------
-    if player:HasCollectible(CollectibleType.COLLECTIBLE_STRANGE_ATTRACTOR) and IR.Config["doStrangeAttractor"] then
-        if flag == CacheFlag.CACHE_DAMAGE then
-            player.Damage = player.Damage * 1.2
-        end
-    end
-    ----------------
-    -- Fast Bombs --
-    ----------------
-    if player:HasCollectible(CollectibleType.COLLECTIBLE_FAST_BOMBS) and IR.Config["doFastBombs"] then
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_DR_FETUS) then
-            if flag == CacheFlag.CACHE_FIREDELAY then
-                player.MaxFireDelay = player.MaxFireDelay - 21
+        if room:IsFirstVisit() == false and roomindex == ISR.TintedGround.currentRoomMG then
+            ISR.TintedGround.checkForDigging = false
+            for _, key in ipairs(ISR.TintedGround.currentFloorMG) do
+                if key.RoomIndex == roomindex then
+                    ISR.TintedGround.checkForDigging = true
+                    ISR.TintedGround.MGX = key.X
+                    ISR.TintedGround.MGY = key.Y
+                    local markedGround = Isaac.Spawn(ISR.TintedGround.markedGround.Type, ISR.TintedGround.markedGround.Variant, ISR.TintedGround.markedGround.SubType0, Vector(key.X,key.Y), Vector(0,0), ISR.TintedGround.markedGround.Spawner)
+                    markedGround.CollisionDamage = 0
+                    markedGround:ToEffect():SetTimeout(999999999)
+                end
+            end
+            for _, key in ipairs(ISR.TintedGround.currentFloorDG) do
+                if key.RoomIndex == roomindex then
+                    ISR.TintedGround.MGX = key.X
+                    ISR.TintedGround.MGY = key.Y
+                    local markedGround = Isaac.Spawn(ISR.TintedGround.markedGround.Type, ISR.TintedGround.markedGround.Variant, ISR.TintedGround.markedGround.SubType1, Vector(key.X,key.Y), Vector(0,0), ISR.TintedGround.markedGround.Spawner)
+                    markedGround.CollisionDamage = 0
+                    markedGround:ToEffect():SetTimeout(999999999)
+                end
             end
         end
-    end
-    -------------------
-    -- 3 Dollar Bill --
-    -------------------
-    if player:HasCollectible(CollectibleType.COLLECTIBLE_3_DOLLAR_BILL) and IR.Config["doThreeDollar"] then
-        if flag == CacheFlag.CACHE_RANGE then
-            player.TearHeight = player.TearHeight - 16.25
+        if room:IsFirstVisit() == true and roomindex == ISR.TintedGround.currentRoomMG then
+            local posGrid
+            repeat
+                posGrid = room:GetClampedGridIndex(room:FindFreeTilePosition(Isaac.GetRandomPosition(), 750))
+            until room:GetGridEntity(posGrid) == nil
+            local clampedPos = room:GetClampedPosition(room:GetGridPosition(posGrid), 0)
+            local markedGround = Isaac.Spawn(ISR.TintedGround.markedGround.Type, ISR.TintedGround.markedGround.Variant, ISR.TintedGround.markedGround.SubType0, clampedPos, Vector(0,0), ISR.TintedGround.markedGround.Spawner)
+            markedGround.CollisionDamage = 0
+            markedGround:ToEffect():SetTimeout(999999999)
+            Isaac.GridSpawn(GridEntityType.GRID_DECORATION, 0, markedGround.Position, false)
+            local savedata = {
+                X = 0,
+                Y = 0,
+                RoomIndex = 0
+            }
+            ISR.TintedGround.MGX, savedata.X = clampedPos.X, clampedPos.X
+            ISR.TintedGround.MGY, savedata.Y = clampedPos.Y, clampedPos.Y
+            savedata.RoomIndex = roomindex
+            table.insert(ISR.TintedGround.currentFloorMG, savedata)
+            ISR.TintedGround.checkForDigging = true
+        end
+        if FindIn({RoomType.ROOM_BLACK_MARKET,RoomType.ROOM_DUNGEON},room:GetType()) or roomindex == Game:GetLevel():GetStartingRoomIndex() then
+            ISR.TintedGround.checkForDigging = false
         end
     end
 end
 
-IR:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, IR.onCache)
+ISR:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, ISR.onRoom)
 
-----------------------------------------------------------------------------
--- Credit to Burp @ https://steamcommunity.com/profiles/76561198042927314 --
-----------------------------------------------------------------------------
-function findFreeTile(pos)
-    local room = Game():GetRoom()
-    local idx = type(pos) == 'number' and pos or room:GetGridIndex(pos)
-    local w = room:GetGridWidth()
-    if room:GetGridEntity(idx) == nil or room:GetGridEntity(idx).State == 4 then
-        return idx
-    elseif room:GetGridEntity(idx - 1) == nil or room:GetGridEntity(idx - 1).State == 4 then
-        return idx - 1
-    elseif room:GetGridEntity(idx + 1) == nil or room:GetGridEntity(idx + 1).State == 4 then
-        return idx + 1
-    elseif room:GetGridEntity(idx - w) == nil or room:GetGridEntity(idx - w).State == 4 then
-        return idx - w
-    elseif room:GetGridEntity(idx + w) == nil or room:GetGridEntity(idx + w).State == 4 then
-        return idx + w
-    elseif room:GetGridEntity(idx - w - 1) == nil or room:GetGridEntity(idx - w - 1).State == 4 then
-        return idx - w - 1
-    elseif room:GetGridEntity(idx + w - 1) == nil or room:GetGridEntity(idx + w - 1).State == 4 then
-        return idx + w - 1
-    elseif room:GetGridEntity(idx - w + 1) == nil or room:GetGridEntity(idx - w + 1).State == 4 then
-        return idx - w + 1
-    elseif room:GetGridEntity(idx + w + 1) == nil or room:GetGridEntity(idx + w + 1).State == 4 then
-        return idx + w + 1
-    else
-        return false
+-------------------
+-- Tinted Ground --
+-------------------
+function ISR:onNewLevel()
+    ISR.TintedGround.currentFloorMG = {}
+    ISR.TintedGround.currentFloorDG = {}
+    ISR.TintedGround.currentRoomMG = 0
+    ISR.TintedGround.hasDug = false
+    if ISR.Config["doTintedGround"] then
+        repeat
+        ISR.TintedGround.currentRoomMG = Game:GetLevel():GetRandomRoomIndex(false, math.random(10000))
+        if Game:GetLevel():GetStage() == LevelStage.STAGE7_GREED and Game:GetLevel():GetStageType() == StageType.STAGETYPE_GREEDMODE then
+            ISR.TintedGround.currentRoomMG = nil
+            return
+        end
+        until ISR.TintedGround.currentRoomMG ~= Game:GetLevel():GetStartingRoomIndex() and not FindIn({RoomType.ROOM_BLACK_MARKET,RoomType.ROOM_DUNGEON,RoomType.ROOM_ANGEL,RoomType.ROOM_DEVIL,RoomType.ROOM_BOSS,RoomType.ROOM_ERROR,RoomType.ROOM_DICE},(Game:GetLevel():GetRoomByIdx(ISR.TintedGround.currentRoomMG)).Data.Type)
     end
+end
+
+ISR:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, ISR.onNewLevel)
+
+function FindIn(tInput, Value)
+    for i in ipairs(tInput) do
+        if Value == tInput[i] then 
+            return true
+        end
+    end
+    return false
 end
 
 -------------------------------------
 -- Credit to Piber20 & Agent Cucco --
 -------------------------------------
 function GetPlayerUsingActive(itemID)
-    for p = 0, Game():GetNumPlayers() - 1 do
+    for p = 0, Game:GetNumPlayers() - 1 do
         local player = Isaac.GetPlayer(p)
         local ActiveCheck = (itemID and (player:GetActiveItem() == itemID or player:GetActiveItem() == CollectibleType.COLLECTIBLE_VOID) or true)
         if ActiveCheck and (Input.IsActionTriggered(ButtonAction.ACTION_ITEM, player.ControllerIndex) or Input.IsActionTriggered(ButtonAction.ACTION_PILLCARD, player.ControllerIndex)) then

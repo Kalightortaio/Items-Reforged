@@ -1,104 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-    <name>Items Reforged</name>
-    <directory>items reforged</directory>
-    <id>2342471510</id>
-    <description>[h1]Items Reforged![/h1]
-This mod aims to rebalance and tweak items that would otherwise be detrimental to a run, while remaining faithful to the vanilla experience.
+    <name>Isaac Reforged</name>
+    <directory>isaac reforged</directory>
+    <id>2349100735</id>
+    <description>[h1]Isaac Reforged![/h1]
+This mod aims to add and rebalance characters, synergies, and transformations, while remaining faithful to the vanilla experience.
 
 Supports External Item Descriptions!
 Supports Mod Config Menu!
 Supports Revelations!
-Supports Friend Folio!
+Supports Fiend Folio!
 &amp; More!
 
 All changes are configurable with the Mod Config Menu. (May require a restart during a run)
 
-[h1]Actives:[/h1]
+[h1]Features:[/h1]
 [list]
-  [*]Breath of Life fires a high damage angelic laser in all 4 corners of the screen.
-  [*]Glass Cannon has a faster cooldown, but briefly pauses firing tears upon use. All health is also converted to empty bone hearts.
-  [*]Mine Crafter recharges over time and has a slight cooldown.
-  [*]The Bean, Kidney Bean, and Mega Bean all recharges over time.
-  [*]Mom's Pad requires 6 charges, and fears enemies for a longer duration.
-  [*]Mom's Bra requires 4 charges, and slows enemies after the active petrify wears off.
-  [*]Dead Sea Scrolls now picks from a list of 108 active items. The Clicker is excluded.
-  [*]Scissors scales evenly with your damage and tear effects. Additionally, the item will spawn a long lasting creep.
-  [*]The Poop will spawn a brown creep alongside a poop when used.
-  [*]Hallowed Ground is now an active item that lets you choose where to place the white poop.
-  [*]Monster Manual gives you extra familiars for the current floor.
-  [*]Isaac's Tears has been reduced to 4 charges. Also this item was buffed in Booster pack #5 (Lesser known by players).
-  [*]Necronomicon has been reduced to 4 charges. 
-  [*]Dataminer, on top of its normal effects, has a chance (in ascending rarity) to spawn a game breaking bug, activate broken modem for a room, cause an error, or teleports you to the I AM ERROR room. The latter effect consumes the item.
-  [*]Yum Heart will now progress through red hearts, soul hearts, black hearts, eternal hearts, and lastly lives. Prioritizes lowest tier of damaged health.
-  [*]Plan C will now revive you as ???, only if you have the character unlocked.
-  [*]Hourglass now slows enemies for an extended amount of time.
-  [*]My Little Unicorn has been reduced to 4 charges.
-  [*]Spider Butt scales with your damage.
-  [*]Kamikaze scales with your item and bomb upgrades.
-  [*]Friendly Ball has been reduced to 1 charge.
+  [*]A new trinket called the Right Hand, the holy counter to the Left Hand.
+  [*]Eternal Chests will always pay out with something, and have a small chance to teleport you to an Angel Room.
+  [*]I Found Pills gives a random pill effect.
+  [*]Several Transformations have been buffed or modified.
+  [*]All characters start with innate and starting trinkets.
+  [*]The Lost never loses Holy Mantle on rerolls.
+  [*]When Cain collects Cain's other eye, he gets 20/20 vision.
+  [*]Troll Bombs will uniformly detonate after 2 seconds.
+  [*]Tinted Ground, a once per floor opportunity to a crawlspace and a chance to enter the black market!
 [/list]
 
-[h1]Passives:[/h1]
+[h1]Transformations:[/h1]
+The Bob Transformation
 [list]
-  [*]Tiny Planet gives a slight tears up, range up, shotspeed down, and follows a more uniform orbit around Isaac.
-  [*]Magneto has a 25% chance to reflect enemy shots back at them.
-  [*]Dad's Lost Coin works much like Money = Power, except for luck. For every coin you have, you gain 0.1 luck.
-  [*]Trisagion now curves up its -66% Damage Multiplier by using a secondary 33% Damage Multiplier.
-  [*]Strange Attractor provides a 20% Damage Multiplier and pulls enemies towards the player less quickly.
-  [*]Cursed Eye gives a +1 Damage up, and has a chance to confuse enemies struck.
-  [*]Dead Tooth's poison aura has a chance for killed enemies to drop black hearts.
-  [*]Holy Water grants a splash damage tear effect that spawns creep, and has a 10% Damage Multiplier.
-  [*]Missing Page 2 will proc on any health lost, causing slight mass room damage.
-  [*]Little Baggy grants half a soul heart upon taking any pill.
-  [*]God's Flesh will protect you from enemies that would otherwise explode, cause further enemies to spawn, or release shots. This effect however, will also override other death triggers, such as consumable drops.
-  [*]Isaac's Heart calls out to its brothers, as a new tear effect that heavily increases heart drop chances. 
-  [*]Fast Bombs grant a massive tears up to Dr. Fetus, and grants Marked to Epic Fetus.
-  [*]3 Dollar Bill grants a substantial range up.
-  [*]Technology 2 no longer gives you a damage down multiplier!
-  [*]Common Cold now affects your familiars too.
-  [*]Placenta will heal every 30 seconds.
-  [*]Lucky Foot will help when you're just a bit short of a shop item, and give scaling movement speed based on player luck.
-  [*]Black Bean makes your tears periodically pass gas.
-  [*]Shard of Glass now deals contact damage and causes bleeding.
-  [*]Poke-Go will rarely spawn in champions.
+  [*]Grants all passive items in the transformation
+  [*]Bob's Bladder contributes to the transformation
+[/list]
+The Conjoined Transformation
+[list]
+  [*]Grants an extra trinket slot
+  [*]Gives the cancer trinket
+[/list]
+The Oh Crap Transformation 
+[list]
+  [*]Grants all passive items in the transformation
+  [*]Butt Bombs, No. 2, Farting Baby, and Number One all additionally contribute to the transformation
+[/list]
+The Adult Transformation
+[list]
+  [*]Gives Depression
+[/list]
+The Spider Baby Transformation
+[list]
+  [*]Grants Spider Bite, Spider Mod, and Spider Baby
+[/list]
+The Seraphim Transformation
+[list]
+  [*]Gives the Soul
+[/list]
+The Fun Guy Transformation
+[list]
+  [*]Grants all passive items in the transformation except for God's Flesh
+[/list]
+The Beelzbub Transformation
+[list]
+  [*]Gives Muligan and 3 Pretty Flies
+[/list]
+The Duality Transformation
+[list]
+  [*]Gives Duality and Eucharist
+  [*]Achieved by holding the Left and Right Hands
+[/list]
+The Magneto Transformation
+[list]
+  [*]Gives all passive items in the transformation
+  [*]Reflects 100% of enemy shots back at them
+  [*]Achieved by collecting two of the following: Magneto, Strange Attractor, Metal Plate, Broken Magnet, and Super Magnet
 [/list]
 
-[h1]Familiars:[/h1]
+[h1]Starting Trinkets:[/h1]
 [list]
-  [*]Abel fires low damage, stagnant tears that pierce.
-  [*]Brother Bobby scales with your damage faster with a lower starting damage.
-  [*]Sister Maggy scales with your damage slower with a higher starting damage.
-  [*]Little C.H.A.D. will give one heart container upon acquisition.
-  [*]Little Gish will give one black heart container upon acquisition.
-  [*]Guppy's Hairball summons blue flies upon entering a new room, the amount less than or equal to the number of enemies.
-  [*]Best Bud, when activated, will deal damage and block shots.
-  [*]King Baby gathers your familiars around him, and always follows you into battle.
-  [*]Bloodshot Eye now shoots tech lasers, instead of tears.
-  [*]Rainbow Baby scales randomly with your damage.
-  [*]Cain's Other Eye now shoots in the direction the player is firing, copying tear effects. Items such as brimstone, mom's knife, or ludovico will end this synergy. 
-  [*]The Peeper will grant another peeper upon getting hit.
-  [*]Ghost Baby scales with your damage.
-  [*]Harlequin Baby scales with your damage.
-  [*]Little Steven scales with your damage. If the trinket Baby-bender is held, Little Steven deals much more damage.
-  [*]Farting Baby will always provide mass room poison, scaling with your damage.
-[/list]
-
-[h1]Item Pools:[/h1]
-[list]
-  [*]Magneto has been added to the Shop item pool.
-  [*]Dad's Ring and Hallowed Ground have been added to the Angel room item pool.
+  [*]Isaac gets the effect of Golden Horse Shoe and starts with Bag Lunch
+  [*]Magdalene gets the effect of Purple Heart and starts with Maggy's Faith
+  [*]Cain gets the effect of Lucky Toe and starts with Paper Clip 
+  [*]Judas gets the effect of Black Feather and starts with Judas' Tongue 
+  [*]XXX gets the effect of Meconium and starts with Petrified Poop
+  [*]Eve gets the effect of Daemon's Tail and starts with Wish Bone 
+  [*]Samson gets the effect of Samson's Lock and starts with Child's Heart
+  [*]Azazel gets the effect of A Missing Page and starts with Tape Worm
+  [*]Lazarus gets the effect of Lost Cork and starts with Rosary Bead
+  [*]Eden gets the effect of Error (404)
+  [*]The Lost gets the Faded Polaroid and starts with Fragmented Card
+  [*]Lilith gets the effect of Child Leash and starts with Blind Rage
+  [*]The Keeper gets the effect of Rib of Greed and starts with Store Key
+  [*]Apollyon gets the effect of Callus and starts with Locust of Conquest 
+  [*]The Forgotten gets the effect of Crow Heart and starts with Finger Bone
 [/list]
 
 Let me know if you enjoy the mod, find any bugs, have any suggestions or criticisms!
 </description>
-    <version>1.9.1</version>
+    <version>1.6.3</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Items"/>
     <tag id="Active Items"/>
     <tag id="Trinkets"/>
+    <tag id="Pills"/>
     <tag id="Pickups"/>
+    <tag id="Player Characters"/>
     <tag id="Familiars"/>
     <tag id="Tweaks"/>
     <tag id="Removals"/>
