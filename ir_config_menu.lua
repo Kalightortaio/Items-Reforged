@@ -30,12 +30,32 @@ if MCMLoaded then
             end,
             Display = function()
 				return "Dad's Lost Coin: $scroll" ..
-					AnIndexOf(coinLuck, IR.Config["DadsLostCoinLuck"]) - 1 .. " " .. IR.Config["DadsLostCoinLuck"] .. " Luck"
+                AnIndexOf(coinLuck, IR.Config["DadsLostCoinLuck"]) - 1 .. " " .. IR.Config["DadsLostCoinLuck"] .. " Luck"
             end,
             OnChange = function(currentNum)
 				IR.Config["DadsLostCoinLuck"] = coinLuck[currentNum + 1]
             end,
             Info = {"The amount of luck each coin gives"}
+        }
+    )
+    -- Broken Modem
+    local modemLuck = {0, 0.08, 0.15, 0.23, 0.30, 0.38, 0.45, 0.53, 0.70, 0.66, 0.75}
+    MCM.AddSetting(
+        "Items Reforged",
+        "General",
+        {
+            Type = ModConfigMenu.OptionType.SCROLL,
+            CurrentSetting = function()
+                return AnIndexOf(modemLuck, IR.Config["BrokenModemChance"]) - 1
+            end,
+            Display = function()
+                return "Broken Modem Chance: $scroll" ..
+                    AnIndexOf(modemLuck, IR.Config["BrokenModemChance"]) - 1 .. " " .. IR.Config["BrokenModemChance"] .. " %"
+            end,
+            OnChange = function(currentNum)
+                IR.Config["BrokenModemChance"] = modemLuck[currentNum + 1]
+            end,
+            Info = {"The chance to negate incoming damage"}
         }
     )
     -- Monster Manual
@@ -437,6 +457,27 @@ if MCMLoaded then
     )
     MCM.AddSetting(
         "Items Reforged",
+        "Actives",
+        {
+            Type = ModConfigMenu.OptionType.BOOLEAN,
+            CurrentSetting = function()
+                return IR.Config["doWoodenNickel"]
+            end,
+            Display = function()
+                local onOff = "False"
+                if IR.Config["doWoodenNickel"] then
+                    onOff = "True"
+                end
+                return "Wooden Nickel: " .. onOff
+            end,
+            OnChange = function(currentBool)
+                IR.Config["doWoodenNickel"] = currentBool
+            end,
+            Info = {"Enable or disable individual items"}
+        }
+    )
+    MCM.AddSetting(
+        "Items Reforged",
         "Passives",
         {
             Type = ModConfigMenu.OptionType.BOOLEAN,
@@ -721,10 +762,31 @@ if MCMLoaded then
                 if IR.Config["doThreeDollar"] then
                     onOff = "True"
                 end
-                return "3 Dollar Bill: " .. onOff
+                return "3 Dollar Bill (range): " .. onOff
             end,
             OnChange = function(currentBool)
                 IR.Config["doThreeDollar"] = currentBool
+            end,
+            Info = {"Enable or disable individual items"}
+        }
+    )
+    MCM.AddSetting(
+        "Items Reforged",
+        "Passives",
+        {
+            Type = ModConfigMenu.OptionType.BOOLEAN,
+            CurrentSetting = function()
+                return IR.Config["doThreeDollars"]
+            end,
+            Display = function()
+                local onOff = "False"
+                if IR.Config["doThreeDollars"] then
+                    onOff = "True"
+                end
+                return "3 Dollar Bill (worth): " .. onOff
+            end,
+            OnChange = function(currentBool)
+                IR.Config["doThreeDollars"] = currentBool
             end,
             Info = {"Enable or disable individual items"}
         }
@@ -914,6 +976,132 @@ if MCMLoaded then
             end,
             OnChange = function(currentBool)
                 IR.Config["doPokeGo"] = currentBool
+            end,
+            Info = {"Enable or disable individual items"}
+        }
+    )
+    MCM.AddSetting(
+        "Items Reforged",
+        "Passives",
+        {
+            Type = ModConfigMenu.OptionType.BOOLEAN,
+            CurrentSetting = function()
+                return IR.Config["doDeepPockets"]
+            end,
+            Display = function()
+                local onOff = "False"
+                if IR.Config["doDeepPockets"] then
+                    onOff = "True"
+                end
+                return "Deep Pockets: " .. onOff
+            end,
+            OnChange = function(currentBool)
+                IR.Config["doDeepPockets"] = currentBool
+            end,
+            Info = {"Enable or disable individual items"}
+        }
+    )
+    MCM.AddSetting(
+        "Items Reforged",
+        "Passives",
+        {
+            Type = ModConfigMenu.OptionType.BOOLEAN,
+            CurrentSetting = function()
+                return IR.Config["doGlyph"]
+            end,
+            Display = function()
+                local onOff = "False"
+                if IR.Config["doGlyph"] then
+                    onOff = "True"
+                end
+                return "Glyph of Balance: " .. onOff
+            end,
+            OnChange = function(currentBool)
+                IR.Config["doGlyph"] = currentBool
+            end,
+            Info = {"Enable or disable individual items"}
+        }
+    )
+    MCM.AddSetting(
+        "Items Reforged",
+        "Passives",
+        {
+            Type = ModConfigMenu.OptionType.BOOLEAN,
+            CurrentSetting = function()
+                return IR.Config["doAries"]
+            end,
+            Display = function()
+                local onOff = "False"
+                if IR.Config["doAries"] then
+                    onOff = "True"
+                end
+                return "Aries: " .. onOff
+            end,
+            OnChange = function(currentBool)
+                IR.Config["doAries"] = currentBool
+            end,
+            Info = {"Enable or disable individual items"}
+        }
+    )
+    MCM.AddSetting(
+        "Items Reforged",
+        "Passives",
+        {
+            Type = ModConfigMenu.OptionType.BOOLEAN,
+            CurrentSetting = function()
+                return IR.Config["doBrokenModem"]
+            end,
+            Display = function()
+                local onOff = "False"
+                if IR.Config["doBrokenModem"] then
+                    onOff = "True"
+                end
+                return "Broken Modem: " .. onOff
+            end,
+            OnChange = function(currentBool)
+                IR.Config["doBrokenModem"] = currentBool
+            end,
+            Info = {"Enable or disable individual items"}
+        }
+    )
+    MCM.AddSetting(
+        "Items Reforged",
+        "Passives",
+        {
+            Type = ModConfigMenu.OptionType.BOOLEAN,
+            CurrentSetting = function()
+                return IR.Config["doSoyMilk"]
+            end,
+            Display = function()
+                local onOff = "False"
+                if IR.Config["doSoyMilk"] then
+                    onOff = "True"
+                end
+                return "Soy Milk: " .. onOff
+            end,
+            OnChange = function(currentBool)
+                IR.Config["doSoyMilk"] = currentBool
+            end,
+            Info = {"Enable or disable individual items"}
+        }
+    )
+    MCM.AddSetting(
+        "Items Reforged",
+        "Familiars",
+        {
+            Type = ModConfigMenu.OptionType.BOOLEAN,
+            CurrentSetting = function()
+                return IR.Config["doFriendlyExplosions"]
+            end,
+            Display = function()
+                local onOff = "False"
+                if IR.Config["doFriendlyExplosions"] then
+                    onOff = "True"
+                end
+                return "Friendly Explosions: " .. onOff
+            end,
+            OnChange = function(currentBool)
+                IR.Config["doFriendlyExplosions"] = currentBool
             end,
             Info = {"Enable or disable individual items"}
         }
@@ -1250,6 +1438,69 @@ if MCMLoaded then
             end,
             OnChange = function(currentBool)
                 IR.Config["doFartingBaby"] = currentBool
+            end,
+            Info = {"Enable or disable individual items"}
+        }
+    )
+    MCM.AddSetting(
+        "Items Reforged",
+        "Familiars",
+        {
+            Type = ModConfigMenu.OptionType.BOOLEAN,
+            CurrentSetting = function()
+                return IR.Config["doPunchingBag"]
+            end,
+            Display = function()
+                local onOff = "False"
+                if IR.Config["doPunchingBag"] then
+                    onOff = "True"
+                end
+                return "Punching Bag: " .. onOff
+            end,
+            OnChange = function(currentBool)
+                IR.Config["doPunchingBag"] = currentBool
+            end,
+            Info = {"Enable or disable individual items"}
+        }
+    )
+    MCM.AddSetting(
+        "Items Reforged",
+        "Familiars",
+        {
+            Type = ModConfigMenu.OptionType.BOOLEAN,
+            CurrentSetting = function()
+                return IR.Config["doKeyBum"]
+            end,
+            Display = function()
+                local onOff = "False"
+                if IR.Config["doKeyBum"] then
+                    onOff = "True"
+                end
+                return "Key Bum: " .. onOff
+            end,
+            OnChange = function(currentBool)
+                IR.Config["doKeyBum"] = currentBool
+            end,
+            Info = {"Enable or disable individual items"}
+        }
+    )
+    MCM.AddSetting(
+        "Items Reforged",
+        "Familiars",
+        {
+            Type = ModConfigMenu.OptionType.BOOLEAN,
+            CurrentSetting = function()
+                return IR.Config["doBumFriend"]
+            end,
+            Display = function()
+                local onOff = "False"
+                if IR.Config["doBumFriend"] then
+                    onOff = "True"
+                end
+                return "Bum Friend: " .. onOff
+            end,
+            OnChange = function(currentBool)
+                IR.Config["doBumFriend"] = currentBool
             end,
             Info = {"Enable or disable individual items"}
         }
