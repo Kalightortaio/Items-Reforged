@@ -17,7 +17,6 @@ All changes are configurable with the Mod Config Menu. (May require a restart du
 [h1]Actives:[/h1]
 [list]
   [*]Breath of Life fires a high damage angelic laser in all 4 corners of the screen.
-  [*]Glass Cannon has a faster cooldown, but briefly pauses firing tears upon use. All health is also converted to empty bone hearts.
   [*]Mine Crafter recharges over time and has a slight cooldown.
   [*]The Bean, Kidney Bean, and Mega Bean all recharges over time.
   [*]Mom's Pad requires 6 charges, and fears enemies for a longer duration.
@@ -28,12 +27,13 @@ All changes are configurable with the Mod Config Menu. (May require a restart du
   [*]Hallowed Ground is now an active item that lets you choose where to place the white poop.
   [*]Monster Manual gives you extra familiars for the current floor.
   [*]Isaac's Tears has been reduced to 4 charges. Also this item was buffed in Booster pack #5 (Lesser known by players).
-  [*]Necronomicon has been reduced to 4 charges. 
+  [*]Glass Cannon has a faster cooldown, but briefly pauses firing tears upon use. All health is converted to empty bone hearts at a 3:1 ratio, for a maximum of 4 bone hearts.
   [*]Dataminer, on top of its normal effects, has a chance (in ascending rarity) to spawn a game breaking bug, activate broken modem for a room, cause an error, or teleports you to the I AM ERROR room. The latter effect consumes the item.
   [*]Yum Heart will now progress through red hearts, soul hearts, black hearts, eternal hearts, and lastly lives. Prioritizes lowest tier of damaged health.
   [*]Plan C will now revive you as ???, only if you have the character unlocked.
   [*]Hourglass now slows enemies for an extended amount of time.
   [*]My Little Unicorn has been reduced to 4 charges.
+  [*]Necronomicon has been reduced to 4 charges. 
   [*]Spider Butt scales with your damage.
   [*]Kamikaze scales with your item and bomb upgrades.
   [*]Friendly Ball has been reduced to 1 charge.
@@ -71,6 +71,7 @@ All changes are configurable with the Mod Config Menu. (May require a restart du
   [*]Broken Modem now has a 30% chance to negate incoming damage.
   [*]Three Dollar Bill counts as currency, effectively trippling the dollar.
   [*]Soy Milk is no longer affected by tears down, unless Libra is picked up.
+  [*]Spear of Destiny now deals damage at 10% maximum health per second.
 [/list]
 
 [h1]Familiars:[/h1]
@@ -105,7 +106,7 @@ All changes are configurable with the Mod Config Menu. (May require a restart du
 
 Let me know if you enjoy the mod, find any bugs, have any suggestions or criticisms!
 </description>
-    <version>2.0</version>
+    <version>2.0.2</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Items"/>

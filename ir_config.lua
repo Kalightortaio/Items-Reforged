@@ -50,6 +50,7 @@ IR.DefaultConfig = {
     ["doAries"] = true,
     ["doBrokenModem"] = true,
     ["doSoyMilk"] = true,
+    ["doSpear"] = true,
     ["doFriendlyExplosions"] = true,
     ["doAbel"] = true,
     ["doBrotherBobby"] = true,

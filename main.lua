@@ -7,7 +7,7 @@ local json = require("json")
 local Game = Game()
 require("ir_config")
 IR.Config = IR.DefaultConfig
-IR.Config.Version = "2.0"
+IR.Config.Version = "2.0.1"
 IR.GameState = {}
 IR.EntityList = {
     Tears = {},
@@ -152,6 +152,7 @@ if EID then
     EID:addCollectible(CollectibleType.COLLECTIBLE_BROKEN_MODEM, "Causes random enemies to 'lag' at random intervals, causing them to shortly freeze#25% chance to double room clear drops#30% chance to negate incoming damage")
     EID:addCollectible(CollectibleType.COLLECTIBLE_BUM_FRIEND, "Converts coins into pickups#Occasionally repays the money taken")
     EID:addCollectible(CollectibleType.COLLECTIBLE_KEY_BUM, "Collects keys, giving random chests and golden keys in return.#Special rewards at 50 and 100 keys, respectively.")
+    EID:addCollectible(CollectibleType.COLLECTIBLE_SPEAR_OF_DESTINY, "Spawns a spear in front of you#Deals 10% of an enemy's max health per second#Chance to fear enemies on contact")
 end
 
 -------------------
@@ -205,7 +206,7 @@ function IR:onStart()
                         IR.Config[key] = savedIRConfig[key]
                     end
                 end
-                IR.Config.Version = "2.0"
+                IR.Config.Version = "2.0.1"
             end
         end
     end
@@ -417,8 +418,27 @@ function IR:onUpdate()
                     player:AddMaxHearts(-IR.glasscannon.redhealth)
                     player:AddSoulHearts(-IR.glasscannon.bluehealth)
                     player:AddBlackHearts(-IR.glasscannon.blackhealth)
-                    player:AddBoneHearts(-IR.glasscannon.bonehealth)
-                    player:AddBoneHearts(math.floor(IR.glasscannon.redhealth/2 + 0.5) + math.floor(IR.glasscannon.bluehealth/2 + 0.5) + math.floor(IR.glasscannon.blackhealth/2 + 0.5) + IR.glasscannon.bonehealth)
+                    if IR.glasscannon.redhealth / 4 == 2 or IR.glasscannon.bluehealth / 3 == 2 or IR.glasscannon.blackhealth / 3 == 2 then
+                        IR.glasscannon.bonehealth = IR.glasscannon.bonehealth + 1
+                    end
+                    if IR.glasscannon.redhealth / 4 == 4 or IR.glasscannon.bluehealth / 3 == 4 or IR.glasscannon.blackhealth / 3 == 4 then
+                        IR.glasscannon.bonehealth = IR.glasscannon.bonehealth + 1
+                    end
+                    if IR.glasscannon.redhealth / 4 == 6 or IR.glasscannon.bluehealth / 3 == 6 or IR.glasscannon.blackhealth / 3 == 6 then
+                        IR.glasscannon.bonehealth = IR.glasscannon.bonehealth + 1
+                    end
+                    if IR.glasscannon.redhealth / 4 == 6 or IR.glasscannon.bluehealth / 3 == 8 or IR.glasscannon.blackhealth / 3 == 8 then
+                        IR.glasscannon.bonehealth = IR.glasscannon.bonehealth + 1
+                    end
+                    if IR.glasscannon.bonehealth > 4 then
+                        player:AddBoneHearts(-IR.glasscannon.bonehealth)
+                        player:AddBoneHearts(4)
+                    elseif IR.glasscannon.bonehealth == 0 then
+                        player:AddBoneHearts(1)
+                    else
+                        player:AddBoneHearts(-IR.glasscannon.bonehealth)
+                        player:AddBoneHearts(IR.glasscannon.bonehealth)
+                    end
                     IR.glasscannon.hasCooldown = true
                 end
             elseif player:GetActiveCharge() == 80 then
@@ -427,7 +447,7 @@ function IR:onUpdate()
                     SFXManager():Play(SoundEffect.SOUND_BATTERYCHARGE, 1.0, 0, false, 1.0)
                     IR.glasscannon.doGCBatterySound = false
                 end
-                IR.glasscannon.bonehealth = (player:GetBoneHearts())
+                IR.glasscannon.bonehealth = player:GetBoneHearts()
                 IR.glasscannon.redhealth = player:GetMaxHearts()
                 IR.glasscannon.bluehealth = player:GetSoulHearts()
                 IR.glasscannon.blackhealth = player:GetBlackHearts()
@@ -901,21 +921,25 @@ function IR:onUpdate()
                 if IR.glyph.numCoins > IR.glyph.numBombs then
                     if (IR.glyph.numCoins - IR.glyph.numBombs) > 1 then
                         player:AddBombs(2)
+                        player:AddCoins(-1)
                     else
                         player:AddBombs(1)
                     end
                     IR.glyph.numBombs = player:GetNumBombs()
+                    IR.glyph.numCoins = player:GetNumCoins()
                 end
                 if IR.glyph.numCoins > IR.glyph.numKeys then
                     if (IR.glyph.numCoins - IR.glyph.numKeys) > 1 then
                         player:AddKeys(2)
+                        player:AddCoins(-1)
                     else
                         player:AddKeys(1)
                     end
                     IR.glyph.numKeys = player:GetNumKeys()
+                    IR.glyph.numCoins = player:GetNumCoins()
                 end
                 if IR.glyph.numCoins > player:GetNumBombs() and IR.glyph.numCoins > player:GetNumKeys() then
-                    player:AddCoins(-1)
+                    player:AddCoins(-2)
                 end
             end
             if player:GetNumBombs() > IR.glyph.numBombs then
@@ -923,21 +947,25 @@ function IR:onUpdate()
                 if IR.glyph.numBombs > IR.glyph.numCoins then
                     if (IR.glyph.numBombs - IR.glyph.numCoins) > 1 then
                         player:AddCoins(2)
+                        player:AddBombs(-1)
                     else
                         player:AddCoins(1)
                     end
                     IR.glyph.numCoins = player:GetNumCoins()
+                    IR.glyph.numBombs = player:GetNumBombs()
                 end
                 if IR.glyph.numBombs > IR.glyph.numKeys then
                     if (IR.glyph.numBombs - IR.glyph.numKeys) > 1 then
                         player:AddKeys(2)
+                        player:AddBombs(-1)
                     else
                         player:AddKeys(1)
                     end
                     IR.glyph.numKeys = player:GetNumKeys()
+                    IR.glyph.numBombs = player:GetNumBombs()
                 end
                 if IR.glyph.numBombs > player:GetNumCoins() and IR.glyph.numBombs > player:GetNumKeys() then
-                    player:AddBombs(-1)
+                    player:AddBombs(-2)
                 end
             end
             if player:GetNumKeys() > IR.glyph.numKeys then
@@ -945,21 +973,25 @@ function IR:onUpdate()
                 if IR.glyph.numKeys > IR.glyph.numCoins then
                     if (IR.glyph.numKeys - IR.glyph.numCoins) > 1 then
                         player:AddCoins(2)
+                        player:AddKeys(-1)
                     else
                         player:AddCoins(1)
                     end
                     IR.glyph.numCoins = player:GetNumCoins()
+                    IR.glyph.numKeys = player:GetNumKeys()
                 end
                 if IR.glyph.numKeys > IR.glyph.numBombs then
                     if (IR.glyph.numKeys - IR.glyph.numBombs) > 1 then
                         player:AddBombs(2)
+                        player:AddKeys(-1)
                     else
                         player:AddBombs(1)
                     end
                     IR.glyph.numBombs = player:GetNumBombs()
+                    IR.glyph.numKeys = player:GetNumKeys()
                 end
                 if IR.glyph.numKeys > player:GetNumCoins() and IR.glyph.numKeys > player:GetNumBombs() then
-                    player:AddKeys(-1)
+                    player:AddKeys(-2)
                 end
             end
             if player:GetNumCoins() < IR.glyph.numCoins then
@@ -1457,13 +1489,11 @@ function IR:onDamage(entity, amt, flag, source, countdown)
         --------------------
         -- Shard of Glass --
         --------------------
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_SHARD_OF_GLASS) and entity.Type == EntityType.ENTITY_PLAYER and IR.Config["doShard"] then
+        if player:HasCollectible(CollectibleType.COLLECTIBLE_SHARD_OF_GLASS) and entity.Type == EntityType.ENTITY_PLAYER and source.Entity ~= nil and IR.Config["doShard"] then
             for _, target in ipairs(IR.EntityList.Enemies) do
-                if source.Entity ~= nil then
-                    if target.Index == source.Entity.Index then
-                        target:TakeDamage(5.0, 0, EntityRef(player), 0)
-                        target:AddEntityFlags(EntityFlag.FLAG_BLEED_OUT)
-                    end
+                if target.Index == source.Entity.Index then
+                    target:TakeDamage(5.0, 0, EntityRef(player), 0)
+                    target:AddEntityFlags(EntityFlag.FLAG_BLEED_OUT)
                 end
             end
         end
@@ -1507,6 +1537,13 @@ function IR:onDamage(entity, amt, flag, source, countdown)
                 player:UseActiveItem(CollectibleType.COLLECTIBLE_DULL_RAZOR, false, false, true, false)
                 return false
             end
+        end
+        ----------------------
+        -- Spear of Destiny --
+        ----------------------
+        if player:HasCollectible(CollectibleType.COLLECTIBLE_SPEAR_OF_DESTINY) and source.Type == EntityType.ENTITY_EFFECT and source.Variant == EffectVariant.SPEAR_OF_DESTINY and IR.Config["doSpear"] then
+            print(math.floor(entity.MaxHitPoints/10 + 0.5))
+            entity:TakeDamage(math.floor(entity.MaxHitPoints/10 + 0.5), 0, EntityRef(player), 0)
         end
     end
 end

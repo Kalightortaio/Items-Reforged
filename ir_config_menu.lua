@@ -1087,6 +1087,27 @@ if MCMLoaded then
     )
     MCM.AddSetting(
         "Items Reforged",
+        "Passives",
+        {
+            Type = ModConfigMenu.OptionType.BOOLEAN,
+            CurrentSetting = function()
+                return IR.Config["doSpear"]
+            end,
+            Display = function()
+                local onOff = "False"
+                if IR.Config["doSpear"] then
+                    onOff = "True"
+                end
+                return "Spear of Destiny: " .. onOff
+            end,
+            OnChange = function(currentBool)
+                IR.Config["doSpear"] = currentBool
+            end,
+            Info = {"Enable or disable individual items"}
+        }
+    )
+    MCM.AddSetting(
+        "Items Reforged",
         "Familiars",
         {
             Type = ModConfigMenu.OptionType.BOOLEAN,
